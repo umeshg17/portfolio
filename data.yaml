@@ -38,6 +38,7 @@ contact:
   linkedin: "https://www.linkedin.com/in/umeshg17/"
   hackerrank: "https://www.hackerrank.com/profile/umeshg17"
   portfolio: "https://umesh.skalekontrol.com"
+  resume_pdf: "resume.pdf"
 
 footer:
   name: "Umesh Gaikwad"
@@ -170,7 +171,7 @@ experience:
       - "Delivered 175+ production infrastructure changes with zero downtime via structured change management process."
       - "Owned Jenkins CI/CD infrastructure on Kubernetes — multi-EKS agents, ALB ingress, Okta SSO, observability integrations, and pipeline optimization for faster builds."
       - "Built a Jira-gated Terraform plan/apply pipeline with AI-powered risk review, S3 plan storage, Slack notifications, and auto-cancellation — changes applied only after approval reaches deployment window."
-      - "Built an AI-powered Slack bot for instant AWS resource lookups during incident debugging — natural-language queries across multiple accounts using LangGraph agents and MCP, eliminating console context-switching."
+      - "Built an MCP-based AI DevOps assistant integrating LLMs with AWS cloud tooling and documentation — Slack interface with LangGraph agents and MCP for natural-language lookups and infrastructure guidance across accounts during incidents."
       - "Designed an approval-based Snowflake change management workflow using Liquibase with PR validation, CODEOWNERS enforcement, and CI/CD pipelines for auditable schema changes."
 
   - company: "Amagi Media Labs"

@@ -28,6 +28,13 @@ for arg in "$@"; do
 done
 
 has_pdflatex() { command -v pdflatex >/dev/null 2>&1; }
+
+sync_site_resume() {
+  if [[ -f "$DIR/resume.pdf" ]]; then
+    cp -f "$DIR/resume.pdf" "$ROOT/resume.pdf"
+    echo "Synced site copy: $ROOT/resume.pdf"
+  fi
+}
 has_latexmk() { command -v latexmk >/dev/null 2>&1; }
 has_docker() { command -v docker >/dev/null 2>&1; }
 
@@ -76,6 +83,7 @@ run_host_once() {
   if command -v xdg-open >/dev/null 2>&1; then
     xdg-open "$DIR/resume.pdf" 2>/dev/null || true
   fi
+  sync_site_resume
   echo "Done: $DIR/resume.pdf"
 }
 
@@ -103,6 +111,7 @@ main() {
       if command -v xdg-open >/dev/null 2>&1; then
         xdg-open "$DIR/resume.pdf" 2>/dev/null || true
       fi
+      sync_site_resume
       echo "Done: $DIR/resume.pdf"
       exit 0
     fi

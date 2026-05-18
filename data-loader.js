@@ -57,6 +57,7 @@ class PortfolioDataLoader {
     if (!this.data) return;
 
     this.populatePersonalInfo();
+    this.applyResumeLinks();
     this.populateProjects();
     this.populateSkills();
     this.populateHighlights();
@@ -82,6 +83,23 @@ class PortfolioDataLoader {
       out = out.replace(regex, `<a href="${url}" target="_blank" rel="noopener noreferrer">${text}</a>`);
     });
     return out;
+  }
+
+  applyResumeLinks() {
+    const url = String(this.data.contact?.resume_pdf ?? '').trim();
+    if (!url) return;
+
+    const nav = document.getElementById('nav-resume');
+    if (nav) {
+      nav.href = url;
+      nav.hidden = false;
+    }
+
+    const hero = document.getElementById('hero-resume');
+    if (hero) {
+      hero.href = url;
+      hero.hidden = false;
+    }
   }
 
   populatePersonalInfo() {
@@ -388,6 +406,11 @@ class PortfolioDataLoader {
         </div>
       </div>
       <div class="contact-links">
+        ${
+          contact.resume_pdf
+            ? `<a class="contact-chip action" href="${escapeAttr(contact.resume_pdf)}" target="_blank" rel="noopener noreferrer">Resume (PDF)</a>`
+            : ''
+        }
         <a class="contact-chip" href="${contact.linkedin || '#'}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
         <a class="contact-chip" href="${contact.hackerrank || '#'}" target="_blank" rel="noopener noreferrer">HackerRank</a>
         ${

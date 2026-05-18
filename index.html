@@ -158,6 +158,15 @@
       background: var(--border);
     }
 
+    .nav-links a.nav-resume {
+      color: var(--accent);
+      border: 1px solid color-mix(in oklab, var(--accent) 35%, transparent);
+    }
+    .nav-links a.nav-resume:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
     .theme-toggle {
       border: 1px solid var(--border);
       background: var(--surface);
@@ -766,6 +775,7 @@
         <a href="#experience">Experience</a>
         <a href="#certifications">Certifications</a>
         <a href="#leetcode" hidden>LeetCode</a>
+        <a href="resume.pdf" id="nav-resume" class="nav-resume" target="_blank" rel="noopener noreferrer" hidden>Resume</a>
         <a href="#contact">Contact</a>
         <button type="button" id="themeBtn" class="theme-toggle" title="Toggle theme" aria-label="Toggle light and dark theme">◐</button>
       </nav>
@@ -781,6 +791,7 @@
           <p class="kicker">Loading…</p>
           <div class="hero-cta">
             <a class="btn btn-primary" href="#projects">View projects</a>
+            <a class="btn btn-ghost" id="hero-resume" href="resume.pdf" target="_blank" rel="noopener noreferrer" hidden>Resume (PDF)</a>
             <a class="btn btn-ghost" href="#contact">Get in touch</a>
           </div>
         </div>
