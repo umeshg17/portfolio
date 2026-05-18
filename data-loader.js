@@ -248,7 +248,6 @@ class PortfolioDataLoader {
     section.hidden = false;
     if (navLink) navLink.hidden = false;
 
-    const slideWidth = 60; // percent per slide
     const n = certs.length;
 
     const slidesHtml = certs.map((c, i) => {
@@ -284,39 +283,76 @@ class PortfolioDataLoader {
     el.innerHTML = `
       <div class="cert-carousel">
         <button class="cert-nav cert-prev" aria-label="Previous certificate">&#8249;</button>
-        <div class="cert-slides">
-          <div class="cert-track">${slidesHtml}</div>
-        </div>
+        <div class="cert-slides">${slidesHtml}</div>
         <button class="cert-nav cert-next" aria-label="Next certificate">&#8250;</button>
+      </div>
+      <div class="cert-mobile-nav">
+        <button type="button" class="cert-nav cert-prev" aria-label="Previous certificate">&#8249;</button>
+        <button type="button" class="cert-nav cert-next" aria-label="Next certificate">&#8250;</button>
       </div>
       <div class="cert-dots">${dots}</div>
     `;
 
     let current = 0;
-    const track = el.querySelector('.cert-track');
+    const viewport = el.querySelector('.cert-slides');
     const slideEls = el.querySelectorAll('.cert-slide');
     const dotEls = el.querySelectorAll('.cert-dot');
-    const slidesContainer = el.querySelector('.cert-slides');
 
-    function getOffset(idx) {
-      const containerCenter = 50;
-      const slideCenter = slideWidth / 2;
-      return -(idx * slideWidth) + containerCenter - slideCenter;
-    }
-
-    function goTo(idx) {
+    function setActive(idx) {
+      const next = ((idx % n) + n) % n;
+      if (next === current) return;
       slideEls[current].classList.remove('active');
       dotEls[current].classList.remove('active');
-      current = ((idx % n) + n) % n;
+      current = next;
       slideEls[current].classList.add('active');
       dotEls[current].classList.add('active');
-      track.style.transform = `translateX(${getOffset(current)}%)`;
     }
 
-    track.style.transform = `translateX(${getOffset(0)}%)`;
+    function goTo(idx, behavior = 'smooth') {
+      const next = ((idx % n) + n) % n;
+      slideEls[next].scrollIntoView({
+        behavior,
+        inline: 'center',
+        block: 'nearest',
+      });
+      setActive(next);
+    }
 
-    el.querySelector('.cert-prev').addEventListener('click', () => goTo(current - 1));
-    el.querySelector('.cert-next').addEventListener('click', () => goTo(current + 1));
+    function syncActiveFromScroll() {
+      const viewRect = viewport.getBoundingClientRect();
+      const centerX = viewRect.left + viewRect.width / 2;
+      let closest = current;
+      let minDist = Infinity;
+
+      slideEls.forEach((slide, i) => {
+        const r = slide.getBoundingClientRect();
+        const slideCenter = r.left + r.width / 2;
+        const dist = Math.abs(slideCenter - centerX);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = i;
+        }
+      });
+
+      setActive(closest);
+    }
+
+    let scrollRaf = 0;
+    viewport.addEventListener(
+      'scroll',
+      () => {
+        if (scrollRaf) cancelAnimationFrame(scrollRaf);
+        scrollRaf = requestAnimationFrame(syncActiveFromScroll);
+      },
+      { passive: true }
+    );
+
+    el.querySelectorAll('.cert-prev').forEach((btn) => {
+      btn.addEventListener('click', () => goTo(current - 1));
+    });
+    el.querySelectorAll('.cert-next').forEach((btn) => {
+      btn.addEventListener('click', () => goTo(current + 1));
+    });
     dotEls.forEach((dot) => {
       dot.addEventListener('click', () => goTo(Number(dot.dataset.index)));
     });
@@ -328,53 +364,9 @@ class PortfolioDataLoader {
       });
     });
 
-    // Drag/swipe support
-    let startX = 0;
-    let isDragging = false;
-
-    slidesContainer.style.cursor = 'grab';
-    slidesContainer.style.userSelect = 'none';
-
-    slidesContainer.addEventListener('pointerdown', (e) => {
-      startX = e.clientX;
-      isDragging = true;
-      slidesContainer.style.cursor = 'grabbing';
+    requestAnimationFrame(() => {
+      goTo(0, 'auto');
     });
-
-    slidesContainer.addEventListener('pointermove', (e) => {
-      if (!isDragging) return;
-      if (Math.abs(e.clientX - startX) > 10) {
-        slidesContainer.setPointerCapture(e.pointerId);
-      }
-    });
-
-    slidesContainer.addEventListener('pointerup', (e) => {
-      if (!isDragging) return;
-      isDragging = false;
-      slidesContainer.style.cursor = 'grab';
-      const diff = e.clientX - startX;
-      if (Math.abs(diff) > 40) {
-        goTo(diff > 0 ? current - 1 : current + 1);
-      }
-    });
-
-    slidesContainer.addEventListener('pointercancel', () => {
-      isDragging = false;
-      slidesContainer.style.cursor = 'grab';
-    });
-
-    slidesContainer.addEventListener('dragstart', (e) => e.preventDefault());
-
-    // Horizontal scroll support
-    let wheelLocked = false;
-    slidesContainer.addEventListener('wheel', (e) => {
-      if (Math.abs(e.deltaX) < 15 || Math.abs(e.deltaY) > Math.abs(e.deltaX)) return;
-      e.preventDefault();
-      if (wheelLocked) return;
-      wheelLocked = true;
-      goTo(e.deltaX > 0 ? current + 1 : current - 1);
-      setTimeout(() => { wheelLocked = false; }, 800);
-    }, { passive: false });
   }
 
   populateContact() {
