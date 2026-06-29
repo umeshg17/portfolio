@@ -308,13 +308,20 @@ class PortfolioDataLoader {
       dotEls[current].classList.add('active');
     }
 
+    function scrollSlideIntoView(idx, behavior = 'smooth') {
+      const slide = slideEls[idx];
+      if (!slide || !viewport) return;
+      const targetLeft = slide.offsetLeft - (viewport.clientWidth - slide.offsetWidth) / 2;
+      const maxScroll = viewport.scrollWidth - viewport.clientWidth;
+      viewport.scrollTo({
+        left: Math.min(maxScroll, Math.max(0, targetLeft)),
+        behavior,
+      });
+    }
+
     function goTo(idx, behavior = 'smooth') {
       const next = ((idx % n) + n) % n;
-      slideEls[next].scrollIntoView({
-        behavior,
-        inline: 'center',
-        block: 'nearest',
-      });
+      scrollSlideIntoView(next, behavior);
       setActive(next);
     }
 
