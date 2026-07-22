@@ -1,0 +1,190 @@
+# Phase 1 Hybrid Athlete Foundation Plan
+# Edit this file and refresh /ironman — no HTML changes needed.
+
+meta:
+  badge: "Private · Phase 1"
+  title: "Phase 1 (Months 1–4) Hybrid Athlete Foundation Plan"
+  description: >-
+    This is the first phase of a 2-year journey towards an athletic physique
+    and completing IRONMAN 70.3. Repeat the workout cycle continuously. It is
+    NOT tied to weekdays. If you miss a workout, continue with the next workout
+    in the cycle.
+  footer: >-
+    Cycle is continuous — not tied to weekdays. Miss a session → pick up at the
+    next workout in order.
+
+habits:
+  title: "Daily Non-Negotiables"
+  items:
+    - name: Protein
+      target: "130–140 g/day"
+      details:
+        - "Spread across 4–5 meals"
+        - "Prioritize eggs, paneer, soya, curd, whey, dal"
+
+    - name: Water
+      target: "3–3.5 L/day"
+      details:
+        - "Increase on long runs"
+        - "Include electrolytes on sessions >90 min"
+
+    - name: Sleep
+      target: "7.5–8.5 hours"
+      details:
+        - "Same sleep/wake time every day"
+
+    - name: Steps
+      target: "8,000–10,000/day"
+      details:
+        - "In addition to your running workout"
+
+    - name: Mobility
+      target: "10–15 min/day"
+      details:
+        - "Hip Flexor Stretch (1 min/side)"
+        - "Hamstring Stretch (1 min/side)"
+        - "Calf Stretch (1 min/side)"
+        - "World's Greatest Stretch (5/side)"
+        - "Cat-Cow (10)"
+        - "Thoracic Rotation (10/side)"
+        - "Shoulder Wall Slides (15)"
+        - "Child's Pose (1 min)"
+
+    - name: Vegetables
+      target: "2 bowls/day (300–400 g)"
+      details:
+        - "Lunch: 1 bowl"
+        - "Dinner: 1 bowl"
+        - "Mix leafy greens, carrots, cucumber, beans, broccoli/cauliflower, capsicum, tomato."
+
+    - name: Fruits
+      target: "2 servings/day"
+      details:
+        - "Prefer banana around workouts"
+        - "One seasonal fruit"
+
+    - name: Sunlight
+      target: "10–15 min"
+      details:
+        - "Morning if possible"
+
+    - name: Workout Log
+      target: "After every workout"
+      details:
+        - "Workout completed"
+        - "Run distance"
+        - "Reps"
+        - "Body weight (weekly)"
+        - "Energy level"
+
+workouts:
+  title: "Workout Cycle"
+  items:
+    - id: 1
+      goal: "Upper Push + Core"
+      cardio: "10k steps"
+      duration: "70 min"
+      exercises:
+        - "Dead Hang 3×45s"
+        - "Scapular Pull-ups 3×10"
+        - "Push-ups 4×10–20"
+        - "Feet Elevated Push-ups 3×8–12"
+        - "Chair Dips 3×12"
+        - "DB Shoulder Press 4×10–12"
+        - "DB Lateral Raise 4×15"
+        - "Pike Push-ups 3×10"
+        - "DB Overhead Triceps Extension 3×12"
+        - "Hanging Knee Raise 3×10"
+        - "Plank 3×60s"
+
+    - id: 2
+      goal: "Easy Run"
+      cardio: "Run"
+      duration: "45–60 min"
+      exercises:
+        - "Zone-2 Run 5–7 km"
+        - "Hip Flexor Stretch"
+        - "Hamstring Stretch"
+        - "Calf Stretch"
+        - "Shoulder Mobility"
+        - "Thoracic Rotation"
+        - "Dead Hang 2×45s"
+
+    - id: 3
+      goal: "Legs + Core"
+      cardio: "10k steps"
+      duration: "70 min"
+      exercises:
+        - "Goblet Squat 4×15"
+        - "Bulgarian Split Squat 3×10/leg"
+        - "Romanian Deadlift 4×12"
+        - "Walking Lunges 3×20"
+        - "Single-leg Glute Bridge 3×15"
+        - "Standing Calf Raise 4×20"
+        - "Hollow Hold 3×30s"
+        - "Russian Twist 3×20"
+
+    - id: 4
+      goal: "Back + Arms"
+      cardio: "10k steps"
+      duration: "70 min"
+      exercises:
+        - "Negative Pull-ups 5×5"
+        - "Assisted Pull-ups 3×6"
+        - "One-arm DB Row 4×12"
+        - "Backpack Row 4×15"
+        - "Rear Delt Fly 4×15"
+        - "DB Curl 4×12"
+        - "Hammer Curl 3×12"
+        - "Reverse Curl 3×12"
+        - "Farmer Carry 3×45s"
+        - "Side Plank 3×45s"
+
+    - id: 5
+      goal: "Long Run"
+      cardio: "Long Run"
+      duration: "60–100 min"
+      exercises:
+        - "Start 6 km and progress to 12 km over 4 months"
+        - "10 min cool-down walk"
+        - "10 min stretching"
+
+    - id: 6
+      goal: "Athletic Strength"
+      cardio: "10k steps"
+      duration: "75 min"
+      exercises:
+        - "Push-ups 3×Max"
+        - "Pull-up Negatives 3×5"
+        - "Goblet Squat 3×15"
+        - "Romanian Deadlift 3×15"
+        - "DB Shoulder Press 3×12"
+        - "One-arm Row 3×12"
+        - "Mountain Climbers 3×20"
+        - "Burpees 3×10"
+        - "Jump Squats 3×15"
+        - "Plank 2×60s"
+
+    - id: 7
+      goal: "Recovery"
+      cardio: "Easy"
+      duration: "45–90 min"
+      exercises:
+        - "Choose ONE of the following"
+        - "Easy Cycling 45–60 min"
+        - "Easy Swimming 800–1000 m"
+        - "Badminton 60 min"
+        - "Brisk Walk 45 min"
+        - "Stretching 20 min (always)"
+
+running:
+  title: "Running Progression"
+  columns:
+    - Month
+    - Easy Run
+    - Long Run
+  rows:
+    - [1, "5 km", "6 km"]
+    - [2, "6 km", "8 km"]
+    - [3, "6–7 km", "10 km"]
+    - [4, "7 km", "12 km"]
