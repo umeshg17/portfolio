@@ -105,11 +105,69 @@
       font-size: 0.9rem;
       color: var(--muted);
     }
-    .habit ul, .ex, .meta { padding-left: 1.1rem; }
-    .habit li, .ex li, .meta li { margin: 0.2rem 0; }
+    .habit ul, .ex, .meta, .checks { padding-left: 1.1rem; }
+    .habit li, .ex li, .meta li, .checks li { margin: 0.2rem 0; }
     .habit ul strong {
       color: var(--text);
       font-weight: 600;
+    }
+    .day-type {
+      margin: 0.2rem 0 0;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+    .block { margin-top: 0.75rem; }
+    .block h4 {
+      margin: 0 0 0.35rem;
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      font-weight: 500;
+    }
+    .checks {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+      list-style: none;
+      padding-left: 0;
+    }
+    .checks li {
+      position: relative;
+      padding-left: 1.35rem;
+    }
+    .checks li::before {
+      content: "☐";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+    .note-line {
+      margin: 0 0 0.5rem;
+      font-size: 0.88rem;
+      color: var(--muted-2);
+      font-style: italic;
+    }
+    .section-lede {
+      margin: -0.35rem 0 1rem;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .section-lede ul {
+      margin: 0;
+      padding-left: 1.1rem;
+    }
+    .section-lede li { margin: 0.2rem 0; }
+    .subhead {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 1.35rem 0 0.75rem;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      border: 0;
+      padding: 0;
     }
     .workout-list {
       display: flex;
@@ -216,6 +274,20 @@
 
     <h2 id="habits-title"></h2>
     <div class="habit-grid" id="habits"></div>
+
+    <section id="mobility-section" hidden>
+      <h2 id="mobility-title"></h2>
+      <div class="section-lede" id="mobility-intro"></div>
+
+      <h3 class="subhead" id="mobility-schedule-title"></h3>
+      <div class="habit-grid" id="mobility-schedule"></div>
+
+      <h3 class="subhead" id="mobility-checklist-title"></h3>
+      <div class="habit-grid" id="mobility-checklist"></div>
+
+      <h3 class="subhead">Routines</h3>
+      <div class="workout-list" id="mobility-routines"></div>
+    </section>
 
     <h2 id="workouts-title"></h2>
     <div class="workout-list" id="workouts"></div>
