@@ -143,13 +143,14 @@
       "id": "night",
       "title": "Night Routine",
       "icon": "night",
-      "tasks": [
-        { "id": "night-stretch", "text": "Stretching if not completed" },
-        { "id": "night-clothes", "text": "Prepare clothes for tomorrow" },
-        { "id": "night-bottle", "text": "Fill water bottle for tomorrow" },
-        { "id": "night-phone", "text": "Phone away / wind down" },
-        { "id": "night-bed", "text": "Sleep before target bedtime" }
-      ]
+      "suggestions": [
+        "Stretching if not completed",
+        "Prepare clothes for tomorrow",
+        "Fill water bottle for tomorrow",
+        "Phone away / wind down",
+        "Sleep before target bedtime"
+      ],
+      "tasks": []
     }
   ]
 }
