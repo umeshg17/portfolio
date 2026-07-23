@@ -41,8 +41,12 @@ export PULUMI_CONFIG_PASSPHRASE= # empty — no interactive secrets unlock (set 
 
 1. Build the Lambda bundle
 2. `pulumi login` to the S3 backend
-3. `pulumi up` (creates/updates DynamoDB, Lambda, HTTP API)
-4. Write `../api-config.js` with the public `apiUrl`
+3. Set `ironmanPin` as a Pulumi secret from `IRONMAN_PIN` (not committed)
+4. `pulumi up` (creates/updates DynamoDB, Lambda, HTTP API)
+5. Write `../api-config.js` with the public `apiUrl`
+6. Restore `Pulumi.ironman.yaml` to non-secret config only (so the encrypted PIN is not left in the working tree)
+
+Do **not** commit `ironmanPin` / `encryptionsalt` in `Pulumi.ironman.yaml` — with an empty passphrase those values are not safe in git.
 
 Manual equivalent:
 

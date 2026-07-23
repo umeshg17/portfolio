@@ -66,4 +66,16 @@ printf '%s\n' \
 
 echo "==> Wrote ../api-config.js"
 cat ../api-config.js
+
+# Keep git clean: strip local secret material written by `pulumi config set --secret`.
+# PIN remains in Pulumi state / Lambda env; next deploy sets it again from IRONMAN_PIN.
+cat > Pulumi.ironman.yaml <<EOF
+# Stack config for the \`ironman\` stack (non-secret values only in git).
+# Secret PIN is set at deploy time by deploy.sh — never commit ironmanPin here.
+
+config:
+  aws:region: ${AWS_REGION}   # AWS region for all resources in this stack (Mumbai)
+EOF
+echo "==> Restored Pulumi.ironman.yaml (secrets not left in working tree)"
+
 echo "==> Done"
