@@ -1024,8 +1024,16 @@ class Dashboard {
         )
         .join('')}</div>`;
     }
-    if (section.note && section.proteinTarget) {
+    if (section.note) {
       body += `<p class="sec-note">${escapeHtml(section.note)}</p>`;
+    }
+    if (section.suggestions && section.suggestions.length) {
+      body += `<div class="suggest">
+  <p class="suggest-label">Suggestions</p>
+  <ul class="suggest-list">${section.suggestions
+    .map((s) => `<li>${escapeHtml(s)}</li>`)
+    .join('')}</ul>
+</div>`;
     }
 
     if (section.type === 'workout-slot') {

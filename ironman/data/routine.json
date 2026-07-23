@@ -29,12 +29,14 @@
       "title": "Breakfast",
       "icon": "breakfast",
       "proteinTarget": "25–30 g",
-      "note": "Log eggs / oats / milk in Protein log above",
+      "note": "Mark what you eat in Protein log above",
+      "suggestions": [
+        "2 boiled eggs (~12 g)",
+        "Oats (~6 g)",
+        "Milk optional (~8 g)"
+      ],
       "tasks": [
-        { "id": "bf-eggs", "text": "2 boiled eggs" },
-        { "id": "bf-oats", "text": "Oats" },
-        { "id": "bf-fruit", "text": "Fruit", "target": "fruit", "amount": 1 },
-        { "id": "bf-milk", "text": "Milk (optional)" }
+        { "id": "bf-fruit", "text": "Fruit", "target": "fruit", "amount": 1 }
       ]
     },
     {
@@ -54,6 +56,8 @@
       "id": "lunch",
       "title": "Lunch",
       "icon": "lunch",
+      "proteinTarget": "35–40 g",
+      "note": "Mark protein foods in Protein log above",
       "plate": {
         "thirds": [
           {
@@ -70,11 +74,12 @@
           }
         ]
       },
+      "suggestions": [
+        "Paneer / soya / dal portion",
+        "Curd / yogurt 100 g (~6 g)"
+      ],
       "tasks": [
-        { "id": "lunch-plate", "text": "Build the ⅓–⅓–⅓ plate" },
         { "id": "lunch-veg", "text": "1 bowl vegetables", "target": "vegetables", "amount": 1 },
-        { "id": "lunch-protein", "text": "Protein portion — log soya / paneer / dal above" },
-        { "id": "lunch-curd", "text": "After lunch: curd/yogurt — log in Protein log" },
         { "id": "lunch-water", "text": "Water with / after meal" }
       ]
     },
@@ -110,8 +115,11 @@
       "id": "postworkout",
       "title": "Post-workout",
       "icon": "recover",
+      "note": "Mark whey in Protein log above",
+      "suggestions": [
+        "Whey protein 1 scoop (~24 g)"
+      ],
       "tasks": [
-        { "id": "post-whey", "text": "Whey protein — check in Protein log" },
         { "id": "post-water", "text": "Water" },
         { "id": "post-stretch", "text": "Post-workout stretch (5 min)", "mobilityRoutine": "stretch" }
       ]
@@ -120,9 +128,12 @@
       "id": "dinner",
       "title": "Dinner",
       "icon": "dinner",
-      "note": "Protein first",
+      "proteinTarget": "~30 g",
+      "note": "Mark protein in Protein log above",
+      "suggestions": [
+        "Paneer / high-protein portion (~30 g)"
+      ],
       "tasks": [
-        { "id": "din-paneer", "text": "Paneer / protein — log in Protein log" },
         { "id": "din-veg", "text": "Vegetables (1 bowl)", "target": "vegetables", "amount": 1 },
         { "id": "din-roti", "text": "Roti / light carbs" },
         { "id": "din-water", "text": "Water" }
