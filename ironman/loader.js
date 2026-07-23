@@ -1,7 +1,6 @@
 const STORAGE_KEY = 'ironman-dashboard-v1';
 const PIN_SESSION_KEY = 'ironman-pin';
 const SYNC_DEBOUNCE_MS = 400;
-const BOTTLE_COOLDOWN_MS = 6 * 60 * 60 * 1000; // 6 hours between bottle finishes
 
 const ICONS = {
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
@@ -105,7 +104,7 @@ function loadLocalState(targets) {
   const base = defaultState(targets);
   if (!state) return base;
 
-  // Preserve cycle + review + last bottle time across days; reset daily checks/progress.
+  // Preserve cycle + review across days; reset daily checks/progress.
   if (state.day !== todayKey()) {
     return {
       ...base,
@@ -174,52 +173,6 @@ function statePayload(state) {
     review: state.review || {},
     lastBottleFinishedAt: state.lastBottleFinishedAt || null,
   };
-}
-
-function formatClock(iso) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-}
-
-function formatBottleStamp(iso) {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return '';
-  const day = todayKey();
-  const y = new Date();
-  y.setDate(y.getDate() - 1);
-  const yesterday = `${y.getFullYear()}-${String(y.getMonth() + 1).padStart(2, '0')}-${String(y.getDate()).padStart(2, '0')}`;
-  const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  const time = formatClock(iso);
-  if (key === day) return `Today ${time}`;
-  if (key === yesterday) return `Yesterday ${time}`;
-  return d.toLocaleString([], {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-}
-
-function bottleCooldownRemainingMs(lastIso) {
-  if (!lastIso) return 0;
-  const last = new Date(lastIso).getTime();
-  if (Number.isNaN(last)) return 0;
-  const remaining = last + BOTTLE_COOLDOWN_MS - Date.now();
-  return remaining > 0 ? remaining : 0;
-}
-
-function formatDuration(ms) {
-  const totalMin = Math.ceil(ms / 60000);
-  const h = Math.floor(totalMin / 60);
-  const m = totalMin % 60;
-  if (h <= 0) return `${m}m`;
-  if (m === 0) return `${h}h`;
-  return `${h}h ${m}m`;
-}
-
-function newWaterLogId() {
-  return `wb-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
 async function apiRequest(path, { method = 'GET', body, pin } = {}) {
@@ -629,7 +582,6 @@ class Dashboard {
     const sticky = document.getElementById('progress-sticky');
     sticky.hidden = false;
     this.recalcChecklistTargets();
-    this.recalcBottleLogTargets();
     const grid = document.getElementById('progress-grid');
     let doneCount = 0;
     grid.innerHTML = (this.targets.items || [])
@@ -639,7 +591,7 @@ class Dashboard {
         const done = val >= item.goal;
         if (done) doneCount += 1;
         const unit = item.unit ? ` ${escapeHtml(item.unit)}` : '';
-        const noCtrls = item.input === 'checklist' || item.input === 'bottle-log';
+        const noCtrls = item.input === 'checklist';
         const ctrls = noCtrls
           ? ''
           : `<div class="stat-ctrls">
@@ -660,15 +612,10 @@ class Dashboard {
       total ? `${doneCount}/${total} targets` : '';
 
     this.renderProteinLog();
-    this.renderWaterLog();
   }
 
   proteinTarget() {
     return (this.targets.items || []).find((t) => t.id === 'protein');
-  }
-
-  waterTarget() {
-    return (this.targets.items || []).find((t) => t.id === 'water');
   }
 
   /** Sum protein grams from checked source boxes (single source of truth). */
@@ -682,19 +629,6 @@ class Dashboard {
       const decimals = item.decimals ?? 0;
       this.state.progress[item.id] =
         decimals > 0 ? Math.round(sum * 100) / 100 : Math.round(sum);
-    });
-  }
-
-  /** Day bar = sum of bottle liters logged today; finishedAt kept for weekly analytics. */
-  recalcBottleLogTargets() {
-    (this.targets.items || []).forEach((item) => {
-      if (item.input !== 'bottle-log') return;
-      const liters = Number(item.bottleLiters) || 2;
-      const log = Array.isArray(this.state.waterLog) ? this.state.waterLog : [];
-      const sum = log.reduce((acc, e) => acc + (Number(e.liters) || liters), 0);
-      const decimals = item.decimals ?? 2;
-      this.state.progress[item.id] = Math.round(sum * 100) / 100;
-      if (decimals === 0) this.state.progress[item.id] = Math.round(sum);
     });
   }
 
@@ -725,117 +659,6 @@ class Dashboard {
 </li>`;
         })
         .join('')}</ul>`;
-  }
-
-  renderWaterLog() {
-    const el = document.getElementById('water-log');
-    if (!el) return;
-    const water = this.waterTarget();
-    if (!water || water.input !== 'bottle-log') {
-      el.hidden = true;
-      el.innerHTML = '';
-      return;
-    }
-    el.hidden = false;
-    const liters = Number(water.bottleLiters) || 2;
-    const log = [...(this.state.waterLog || [])].sort((a, b) =>
-      String(a.finishedAt).localeCompare(String(b.finishedAt))
-    );
-    const lastAt = this.state.lastBottleFinishedAt || log[log.length - 1]?.finishedAt || null;
-    const cooldownMs = bottleCooldownRemainingMs(lastAt);
-    const coolingDown = cooldownMs > 0;
-    const armed = !!this._bottleArmed;
-    const title = water.logTitle || 'Bottle finishes';
-    const hint = (water.logHint || '').trim();
-    const lastLine = lastAt
-      ? `Last finish: ${formatBottleStamp(lastAt)}`
-      : 'Last finish: none yet';
-    const cooldownLine = coolingDown
-      ? `Next log available in ${formatDuration(cooldownMs)}`
-      : 'Ready to log another bottle';
-
-    const rows = log.length
-      ? `<ul class="bottle-list">${log
-          .map((e) => {
-            const L = Number(e.liters) || liters;
-            return `<li class="bottle-row">
-  <span class="bottle-main">${escapeHtml(String(L))} L bottle</span>
-  <span class="bottle-time">${escapeHtml(formatBottleStamp(e.finishedAt))}</span>
-  <button type="button" class="bottle-undo" data-action="remove-bottle" data-id="${escapeHtml(e.id)}" aria-label="Remove bottle finish">Undo</button>
-</li>`;
-          })
-          .join('')}</ul>`
-      : `<p class="bottle-empty">No bottles finished yet today.</p>`;
-
-    el.innerHTML = `
-      <div class="protein-log-head">
-        <h3>${escapeHtml(title)}</h3>
-        <span class="protein-log-hint">${log.length} today · ${escapeHtml(String(liters))} L each</span>
-      </div>
-      ${hint ? `<p class="water-log-hint">${escapeHtml(hint)}</p>` : ''}
-      <p class="bottle-last">${escapeHtml(lastLine)}</p>
-      <p class="bottle-cooldown${coolingDown ? ' wait' : ''}">${escapeHtml(cooldownLine)}</p>
-      <label class="bottle-toggle${coolingDown ? ' disabled' : ''}">
-        <input type="checkbox" id="bottle-arm" data-action="arm-bottle" ${armed ? 'checked' : ''} ${coolingDown ? 'disabled' : ''} />
-        <span>I finished a ${escapeHtml(String(liters))} L bottle</span>
-      </label>
-      <button type="button" class="bottle-add" data-action="log-bottle" ${!armed || coolingDown ? 'disabled' : ''}>
-        Confirm bottle finish
-      </button>
-      ${rows}`;
-  }
-
-  setBottleArmed(armed) {
-    this._bottleArmed = !!armed;
-    this.renderWaterLog();
-  }
-
-  logWaterBottle() {
-    if (!this._bottleArmed) return;
-    const lastAt = this.state.lastBottleFinishedAt;
-    if (bottleCooldownRemainingMs(lastAt) > 0) {
-      this._bottleArmed = false;
-      this.renderWaterLog();
-      return;
-    }
-    const water = this.waterTarget();
-    const liters = Number(water?.bottleLiters) || 2;
-    if (!Array.isArray(this.state.waterLog)) this.state.waterLog = [];
-    const finishedAt = new Date().toISOString();
-    this.state.waterLog.push({
-      id: newWaterLogId(),
-      finishedAt,
-      liters,
-    });
-    this.state.lastBottleFinishedAt = finishedAt;
-    this._bottleArmed = false;
-    this.recalcBottleLogTargets();
-    this.persist();
-    this.renderProgress();
-  }
-
-  removeWaterBottle(id) {
-    this.state.waterLog = (this.state.waterLog || []).filter((e) => e.id !== id);
-    // Recompute last finish from remaining today + keep meta if newer is gone
-    const times = (this.state.waterLog || [])
-      .map((e) => e.finishedAt)
-      .filter(Boolean)
-      .sort();
-    const todayLast = times.length ? times[times.length - 1] : null;
-    if (
-      this.state.lastBottleFinishedAt &&
-      todayLast &&
-      this.state.lastBottleFinishedAt <= todayLast
-    ) {
-      this.state.lastBottleFinishedAt = todayLast;
-    } else if (!todayLast && this.state.lastBottleFinishedAt) {
-      // Undoing today's last finish: clear only if it was today's stamp
-      const lastKey = String(this.state.lastBottleFinishedAt).slice(0, 10);
-      if (lastKey === todayKey()) this.state.lastBottleFinishedAt = null;
-    }
-    this.recalcBottleLogTargets();
-    this.persist();
-    this.renderProgress();
   }
 
   sectionTasks(section) {
@@ -1246,7 +1069,7 @@ class Dashboard {
 
   adjustTarget(id, dir) {
     const item = (this.targets.items || []).find((t) => t.id === id);
-    if (!item || item.input === 'checklist' || item.input === 'bottle-log') return;
+    if (!item || item.input === 'checklist') return;
     const step = item.step || 1;
     let val = Number(this.state.progress[id]) || 0;
     val = Math.max(0, val + dir * step);
@@ -1336,12 +1159,9 @@ class Dashboard {
     if (!confirm('Clear today\'s checkboxes and progress? Workout cycle position is kept.')) return;
     const keepIndex = this.state.workoutIndex;
     const keepReview = this.state.review;
-    const keepLastBottle = this.state.lastBottleFinishedAt;
     this.state = defaultState(this.targets);
     this.state.workoutIndex = keepIndex;
     this.state.review = keepReview;
-    this.state.lastBottleFinishedAt = keepLastBottle;
-    this._bottleArmed = false;
     this.persist();
     this.render();
   }
@@ -1383,19 +1203,9 @@ class Dashboard {
       else if (action === 'dec') this.adjustTarget(btn.getAttribute('data-id'), -1);
       else if (action === 'complete-workout') this.completeWorkout();
       else if (action === 'undo-workout') this.undoWorkout();
-      else if (action === 'log-bottle') this.logWaterBottle();
-      else if (action === 'remove-bottle') this.removeWaterBottle(btn.getAttribute('data-id'));
-      else if (action === 'arm-bottle') {
-        /* handled on change */
-      }
     });
 
     root.addEventListener('change', (e) => {
-      const arm = e.target.closest('[data-action="arm-bottle"]');
-      if (arm) {
-        this.setBottleArmed(arm.checked);
-        return;
-      }
       const input = e.target.closest('[data-review]');
       if (!input) return;
       this.state.review[input.getAttribute('data-review')] = input.value;

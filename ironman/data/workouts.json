@@ -9,9 +9,6 @@
       "cardio": "10k steps",
       "duration": "70 min",
       "setsSummary": "11 exercises",
-      "mobility": [
-        { "routine": "warmup" }
-      ],
       "exercises": [
         { "name": "Dead Hang", "sets": "3", "reps": "45s" },
         { "name": "Scapular Pull-ups", "sets": "3", "reps": "10" },
@@ -33,9 +30,6 @@
       "cardio": "Run",
       "duration": "45–60 min",
       "setsSummary": "Zone-2 + mobility",
-      "mobility": [
-        { "routine": "warmup" }
-      ],
       "exercises": [
         { "name": "Zone-2 Run", "sets": "1", "reps": "5–7 km" },
         { "name": "Hip Flexor Stretch", "sets": "—", "reps": "hold" },
@@ -53,9 +47,6 @@
       "cardio": "10k steps",
       "duration": "70 min",
       "setsSummary": "8 exercises",
-      "mobility": [
-        { "routine": "warmup" }
-      ],
       "exercises": [
         { "name": "Goblet Squat", "sets": "4", "reps": "15" },
         { "name": "Bulgarian Split Squat", "sets": "3", "reps": "10/leg" },
@@ -74,9 +65,6 @@
       "cardio": "10k steps",
       "duration": "70 min",
       "setsSummary": "10 exercises",
-      "mobility": [
-        { "routine": "warmup" }
-      ],
       "exercises": [
         { "name": "Negative Pull-ups", "sets": "5", "reps": "5" },
         { "name": "Assisted Pull-ups", "sets": "3", "reps": "6" },
@@ -97,9 +85,6 @@
       "cardio": "Long Run",
       "duration": "60–100 min",
       "setsSummary": "Progressive distance",
-      "mobility": [
-        { "routine": "warmup" }
-      ],
       "exercises": [
         { "name": "Long Run", "sets": "1", "reps": "see Long Run Progress" },
         { "name": "Cool-down Walk", "sets": "1", "reps": "10 min" },
@@ -113,9 +98,6 @@
       "cardio": "10k steps",
       "duration": "75 min",
       "setsSummary": "10 exercises",
-      "mobility": [
-        { "routine": "warmup" }
-      ],
       "exercises": [
         { "name": "Push-ups", "sets": "3", "reps": "Max" },
         { "name": "Pull-up Negatives", "sets": "3", "reps": "5" },

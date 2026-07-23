@@ -270,106 +270,6 @@
     .protein-log .check.done .check-meta {
       color: var(--accent-bright);
     }
-    .water-log {
-      margin-top: 0.85rem;
-      padding-top: 0.85rem;
-      border-top: 1px solid var(--border);
-    }
-    .water-log-hint {
-      margin: 0 0 0.7rem;
-      font-size: 0.78rem;
-      color: var(--muted-2);
-      line-height: 1.4;
-    }
-    .bottle-add {
-      width: 100%;
-      padding: 0.7rem 0.85rem;
-      border-radius: var(--radius-sm);
-      background: var(--accent-dim);
-      border: 1px solid var(--accent-border);
-      color: var(--accent-bright);
-      font-weight: 600;
-      margin-bottom: 0.65rem;
-    }
-    .bottle-add:hover:not(:disabled) { background: rgba(52, 211, 153, 0.18); }
-    .bottle-add:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-    .bottle-last {
-      margin: 0 0 0.25rem;
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--accent-bright);
-    }
-    .bottle-cooldown {
-      margin: 0 0 0.7rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-    .bottle-cooldown.wait { color: var(--danger); }
-    .bottle-toggle {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.65rem 0.75rem;
-      margin-bottom: 0.55rem;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-strong);
-      background: var(--surface-2);
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .bottle-toggle.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .bottle-toggle input {
-      width: 1.15rem;
-      height: 1.15rem;
-      accent-color: var(--accent);
-    }
-    .bottle-empty {
-      margin: 0;
-      font-size: 0.82rem;
-      color: var(--muted-2);
-    }
-    .bottle-list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-    .bottle-row {
-      display: flex;
-      align-items: center;
-      gap: 0.65rem;
-      padding: 0.55rem 0.65rem;
-      border-radius: var(--radius-sm);
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-    }
-    .bottle-main {
-      font-weight: 600;
-      font-size: 0.88rem;
-    }
-    .bottle-time {
-      margin-left: auto;
-      font-family: var(--mono);
-      font-size: 0.78rem;
-      color: var(--accent-bright);
-    }
-    .bottle-undo {
-      font-size: 0.72rem;
-      color: var(--muted-2);
-      padding: 0.2rem 0.4rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-    }
-    .bottle-undo:hover { color: var(--text); border-color: var(--border-strong); }
-
     /* Next up */
     .next-up {
       display: flex;
@@ -1059,7 +959,6 @@
       </div>
       <div class="progress-grid" id="progress-grid"></div>
       <div class="protein-log" id="protein-log" hidden></div>
-      <div class="water-log" id="water-log" hidden></div>
     </div>
 
     <div class="next-up" id="next-up" hidden></div>

@@ -97,10 +97,10 @@
       },
       "suggestions": [
         "Banana — 30–60 min before warm-up",
-        "Honey (optional) — with the snack"
+        "Honey (optional) — with the snack",
+        "Water"
       ],
       "tasks": [
-        { "id": "pre-water", "text": "Water" },
         { "id": "pre-warmup", "text": "Dynamic warm-up (5 min) — just before workout/run", "mobilityRoutine": "warmup" }
       ]
     },
@@ -118,10 +118,10 @@
       "icon": "recover",
       "note": "Within 30–60 min of finishing: mark whey in Protein log, then stretch",
       "suggestions": [
-        "Whey protein 1 scoop (~24 g) — within 30–60 min post"
+        "Whey protein 1 scoop (~24 g) — within 30–60 min post",
+        "Water"
       ],
       "tasks": [
-        { "id": "post-water", "text": "Water" },
         { "id": "post-stretch", "text": "Post-workout stretch (5 min) — after whey or right after session", "mobilityRoutine": "stretch" }
       ]
     },

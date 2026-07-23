@@ -21,18 +21,6 @@
         { "id": "ps-dal", "label": "Dal (1 bowl)", "amount": 9 },
         { "id": "ps-protein-bar", "label": "Protein bar", "amount": 5 }
       ]
-    },
-    {
-      "id": "water",
-      "label": "Water",
-      "icon": "water",
-      "unit": "L",
-      "goal": 3.5,
-      "default": 0,
-      "decimals": 2,
-      "input": "bottle-log",
-      "bottleLiters": 2,
-      "logTitle": "Bottle finishes"
     }
   ]
 }
