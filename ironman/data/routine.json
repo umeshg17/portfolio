@@ -6,7 +6,7 @@
       "title": "Wake Up",
       "icon": "sun",
       "tasks": [
-        { "id": "wake-water", "text": "Drink 500–700 ml water", "target": "water", "amount": 0.6 },
+        { "id": "wake-water", "text": "Drink water — log bottle finishes above when empty" },
         { "id": "wake-walk", "text": "Walk 5–10 min" },
         { "id": "wake-sun", "text": "Get sunlight 10–15 min" },
         { "id": "wake-coffee", "text": "Black coffee (optional)" },
@@ -29,12 +29,12 @@
       "title": "Breakfast",
       "icon": "breakfast",
       "proteinTarget": "25–30 g",
-      "note": "Estimated ~28 g protein",
+      "note": "Log eggs / oats / milk in Protein log above",
       "tasks": [
-        { "id": "bf-eggs", "text": "2 boiled eggs (~12 g)", "target": "protein", "amount": 12 },
-        { "id": "bf-oats", "text": "Oats (~6 g)", "target": "protein", "amount": 6 },
+        { "id": "bf-eggs", "text": "2 boiled eggs" },
+        { "id": "bf-oats", "text": "Oats" },
         { "id": "bf-fruit", "text": "Fruit", "target": "fruit", "amount": 1 },
-        { "id": "bf-milk", "text": "Milk (optional, ~8 g)", "target": "protein", "amount": 8 }
+        { "id": "bf-milk", "text": "Milk (optional)" }
       ]
     },
     {
@@ -47,7 +47,7 @@
       },
       "tasks": [
         { "id": "office-standup", "text": "Hourly stand + walk (track through day)" },
-        { "id": "office-water", "text": "Sip water through the morning", "target": "water", "amount": 0.5 },
+        { "id": "office-water", "text": "Sip from bottle through the morning" },
         { "id": "office-steps", "text": "Accumulate steps at desk breaks", "target": "steps", "amount": 2000 }
       ]
     },
@@ -74,9 +74,9 @@
       "tasks": [
         { "id": "lunch-plate", "text": "Build the ⅓–⅓–⅓ plate" },
         { "id": "lunch-veg", "text": "1 bowl vegetables", "target": "vegetables", "amount": 1 },
-        { "id": "lunch-protein", "text": "Protein portion (~30–35 g)", "target": "protein", "amount": 32 },
-        { "id": "lunch-curd", "text": "After lunch: 100 g curd/yogurt (~6 g)", "target": "protein", "amount": 6 },
-        { "id": "lunch-water", "text": "Water with / after meal", "target": "water", "amount": 0.4 }
+        { "id": "lunch-protein", "text": "Protein portion — log soya / paneer / dal above" },
+        { "id": "lunch-curd", "text": "After lunch: curd/yogurt — log in Protein log" },
+        { "id": "lunch-water", "text": "Water with / after meal" }
       ]
     },
     {
@@ -85,7 +85,7 @@
       "icon": "afternoon",
       "tasks": [
         { "id": "aft-stand", "text": "Continue hourly stand + walk" },
-        { "id": "aft-water", "text": "Keep drinking water", "target": "water", "amount": 0.5 },
+        { "id": "aft-water", "text": "Keep sipping — mark bottle when empty" },
         { "id": "aft-snack", "text": "Light snack if hungry (optional)" },
         { "id": "aft-steps", "text": "Close remaining work-day steps", "target": "steps", "amount": 2000 }
       ]
@@ -97,8 +97,8 @@
       "tasks": [
         { "id": "pre-banana", "text": "Banana", "target": "fruit", "amount": 1 },
         { "id": "pre-honey", "text": "Honey (optional)" },
-        { "id": "pre-water", "text": "Water", "target": "water", "amount": 0.3 },
-        { "id": "pre-warmup", "text": "Dynamic warm-up (5 min)" }
+        { "id": "pre-water", "text": "Water" },
+        { "id": "pre-warmup", "text": "Dynamic warm-up (5 min)", "mobilityRoutine": "warmup" }
       ]
     },
     {
@@ -113,9 +113,9 @@
       "title": "Post-workout",
       "icon": "recover",
       "tasks": [
-        { "id": "post-whey", "text": "Whey protein (~24 g)", "target": "protein", "amount": 24 },
-        { "id": "post-water", "text": "Water", "target": "water", "amount": 0.5 },
-        { "id": "post-stretch", "text": "Post-workout stretch (5–10 min)" }
+        { "id": "post-whey", "text": "Whey protein — check in Protein log" },
+        { "id": "post-water", "text": "Water" },
+        { "id": "post-stretch", "text": "Post-workout stretch (5 min)", "mobilityRoutine": "stretch" }
       ]
     },
     {
@@ -124,10 +124,10 @@
       "icon": "dinner",
       "note": "Protein first",
       "tasks": [
-        { "id": "din-paneer", "text": "Paneer / protein (~30 g)", "target": "protein", "amount": 30 },
+        { "id": "din-paneer", "text": "Paneer / protein — log in Protein log" },
         { "id": "din-veg", "text": "Vegetables (1 bowl)", "target": "vegetables", "amount": 1 },
         { "id": "din-roti", "text": "Roti / light carbs" },
-        { "id": "din-water", "text": "Water", "target": "water", "amount": 0.3 }
+        { "id": "din-water", "text": "Water" }
       ]
     },
     {
@@ -137,7 +137,7 @@
       "tasks": [
         { "id": "night-stretch", "text": "Stretching if not completed" },
         { "id": "night-clothes", "text": "Prepare clothes for tomorrow" },
-        { "id": "night-bottle", "text": "Fill water bottle" },
+        { "id": "night-bottle", "text": "Fill water bottle for tomorrow" },
         { "id": "night-phone", "text": "Phone away / wind down" },
         { "id": "night-bed", "text": "Sleep before target bedtime" }
       ]

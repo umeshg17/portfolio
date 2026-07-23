@@ -7,8 +7,20 @@
       "icon": "protein",
       "unit": "g",
       "goal": 130,
-      "step": 5,
-      "default": 0
+      "default": 0,
+      "input": "checklist",
+      "sourcesTitle": "Protein log",
+      "sources": [
+        { "id": "ps-soya-50", "label": "Soya 50 g", "amount": 26 },
+        { "id": "ps-whey", "label": "Whey protein (1 scoop)", "amount": 24 },
+        { "id": "ps-milk-500", "label": "Milk 500 ml", "amount": 16 },
+        { "id": "ps-paneer-100", "label": "Paneer 100 g", "amount": 18 },
+        { "id": "ps-eggs-2", "label": "2 boiled eggs", "amount": 12 },
+        { "id": "ps-curd-100", "label": "Curd / yogurt 100 g", "amount": 6 },
+        { "id": "ps-oats", "label": "Oats (1 bowl)", "amount": 6 },
+        { "id": "ps-dal", "label": "Dal (1 bowl)", "amount": 9 },
+        { "id": "ps-protein-bar", "label": "Protein bar", "amount": 20 }
+      ]
     },
     {
       "id": "water",
@@ -16,9 +28,12 @@
       "icon": "water",
       "unit": "L",
       "goal": 3.5,
-      "step": 0.25,
       "default": 0,
-      "decimals": 2
+      "decimals": 2,
+      "input": "bottle-log",
+      "bottleLiters": 2,
+      "logTitle": "Bottle finishes",
+      "logHint": "Mark when a 2 L bottle is empty — time is saved for weekly averages (morning finishes often include yesterday’s water)"
     },
     {
       "id": "vegetables",

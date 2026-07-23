@@ -80,6 +80,7 @@ function defaultState(targets) {
     day: todayKey(),
     checks: {},
     progress,
+    waterLog: [],
     workoutIndex: 0,
     openSections: {},
     review: {},
@@ -117,6 +118,7 @@ function loadLocalState(targets) {
     ...state,
     progress: { ...base.progress, ...(state.progress || {}) },
     checks: state.checks || {},
+    waterLog: Array.isArray(state.waterLog) ? state.waterLog : [],
     openSections: state.openSections || {},
     review: state.review || {},
     updatedAt: state.updatedAt || null,
@@ -136,6 +138,7 @@ function mergeServerState(targets, remote) {
     day: day.day || todayKey(),
     checks: day.checks || {},
     progress: { ...base.progress, ...(day.progress || {}) },
+    waterLog: Array.isArray(day.waterLog) ? day.waterLog : [],
     openSections: day.openSections || {},
     workoutDoneToday: !!day.workoutDoneToday,
     completedWorkoutIndex:
@@ -157,6 +160,7 @@ function statePayload(state) {
     day: state.day,
     checks: state.checks || {},
     progress: state.progress || {},
+    waterLog: Array.isArray(state.waterLog) ? state.waterLog : [],
     openSections: state.openSections || {},
     workoutDoneToday: !!state.workoutDoneToday,
     completedWorkoutIndex:
@@ -164,6 +168,16 @@ function statePayload(state) {
     workoutIndex: state.workoutIndex ?? 0,
     review: state.review || {},
   };
+}
+
+function formatClock(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function newWaterLogId() {
+  return `wb-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
 
 async function apiRequest(path, { method = 'GET', body, pin } = {}) {
@@ -217,24 +231,28 @@ function resolveBootState(targets, local, remote) {
   const serverHasDayData =
     Object.keys(serverState.checks || {}).length > 0 ||
     Object.values(serverState.progress || {}).some((v) => Number(v) > 0) ||
+    (serverState.waterLog || []).length > 0 ||
     serverState.workoutDoneToday ||
     !!serverTs;
 
-  if (!serverHasDayData && (localTs || Object.keys(local.checks || {}).length)) {
+  if (!serverHasDayData && (localTs || localHasMeaningfulData(local))) {
     return { state: { ...local, day: todayKey() }, shouldUpload: true };
   }
   if (localTs && serverTs && localTs > serverTs) {
     return { state: { ...local, day: todayKey() }, shouldUpload: true };
   }
-  if (localTs && !serverTs && (local.day === todayKey())) {
-    const localHasData =
-      Object.keys(local.checks || {}).length > 0 ||
-      Object.values(local.progress || {}).some((v) => Number(v) > 0);
-    if (localHasData) {
-      return { state: { ...local, day: todayKey() }, shouldUpload: true };
-    }
+  if (localTs && !serverTs && local.day === todayKey() && localHasMeaningfulData(local)) {
+    return { state: { ...local, day: todayKey() }, shouldUpload: true };
   }
   return { state: serverState, shouldUpload: false };
+}
+
+function localHasMeaningfulData(local) {
+  return (
+    Object.keys(local.checks || {}).length > 0 ||
+    Object.values(local.progress || {}).some((v) => Number(v) > 0) ||
+    (local.waterLog || []).length > 0
+  );
 }
 
 function setSyncStatus(text, isError) {
@@ -399,12 +417,13 @@ async function boot() {
     const pin = await ensureUnlocked();
     appShell.hidden = false;
 
-    const [meta, targets, routine, workouts, milestones] = await Promise.all([
+    const [meta, targets, routine, workouts, milestones, mobility] = await Promise.all([
       loadJson('data/meta.json'),
       loadJson('data/targets.json'),
       loadJson('data/routine.json'),
       loadJson('data/workouts.json'),
       loadJson('data/milestones.json'),
+      loadJson('data/mobility.json'),
     ]);
 
     const local = loadLocalState(targets);
@@ -433,6 +452,7 @@ async function boot() {
       routine,
       workouts,
       milestones,
+      mobility,
       state: initialState,
       pin,
     });
@@ -458,6 +478,7 @@ class Dashboard {
     this.routine = data.routine;
     this.workouts = data.workouts;
     this.milestones = data.milestones;
+    this.mobility = data.mobility || { routines: {} };
     this.state = data.state || loadLocalState(this.targets);
     this.pin = data.pin || null;
     this._bound = false;
@@ -565,6 +586,8 @@ class Dashboard {
   renderProgress() {
     const sticky = document.getElementById('progress-sticky');
     sticky.hidden = false;
+    this.recalcChecklistTargets();
+    this.recalcBottleLogTargets();
     const grid = document.getElementById('progress-grid');
     let doneCount = 0;
     grid.innerHTML = (this.targets.items || [])
@@ -574,14 +597,18 @@ class Dashboard {
         const done = val >= item.goal;
         if (done) doneCount += 1;
         const unit = item.unit ? ` ${escapeHtml(item.unit)}` : '';
-        return `<div class="stat${done ? ' done' : ''}" data-target="${escapeHtml(item.id)}">
+        const noCtrls = item.input === 'checklist' || item.input === 'bottle-log';
+        const ctrls = noCtrls
+          ? ''
+          : `<div class="stat-ctrls">
+    <button type="button" data-action="dec" data-id="${escapeHtml(item.id)}" aria-label="Decrease ${escapeHtml(item.label)}">−</button>
+    <button type="button" data-action="inc" data-id="${escapeHtml(item.id)}" aria-label="Increase ${escapeHtml(item.label)}">+</button>
+  </div>`;
+        return `<div class="stat${done ? ' done' : ''}${noCtrls ? ' checklist-mode' : ''}" data-target="${escapeHtml(item.id)}">
   <span class="stat-label">${escapeHtml(item.label)}</span>
   <div class="stat-value">${escapeHtml(formatValue(item, val))}<span class="goal"> / ${escapeHtml(formatGoal(item))}${unit}</span></div>
   <div class="stat-bar"><i style="width:${pct}%"></i></div>
-  <div class="stat-ctrls">
-    <button type="button" data-action="dec" data-id="${escapeHtml(item.id)}" aria-label="Decrease ${escapeHtml(item.label)}">−</button>
-    <button type="button" data-action="inc" data-id="${escapeHtml(item.id)}" aria-label="Increase ${escapeHtml(item.label)}">+</button>
-  </div>
+  ${ctrls}
 </div>`;
       })
       .join('');
@@ -589,17 +616,211 @@ class Dashboard {
     const total = (this.targets.items || []).length;
     document.getElementById('progress-pct').textContent =
       total ? `${doneCount}/${total} targets` : '';
+
+    this.renderProteinLog();
+    this.renderWaterLog();
+  }
+
+  proteinTarget() {
+    return (this.targets.items || []).find((t) => t.id === 'protein');
+  }
+
+  waterTarget() {
+    return (this.targets.items || []).find((t) => t.id === 'water');
+  }
+
+  /** Sum protein grams from checked source boxes (single source of truth). */
+  recalcChecklistTargets() {
+    (this.targets.items || []).forEach((item) => {
+      if (item.input !== 'checklist' || !item.sources) return;
+      let sum = 0;
+      item.sources.forEach((s) => {
+        if (this.state.checks[s.id]) sum += Number(s.amount) || 0;
+      });
+      const decimals = item.decimals ?? 0;
+      this.state.progress[item.id] =
+        decimals > 0 ? Math.round(sum * 100) / 100 : Math.round(sum);
+    });
+  }
+
+  /** Day bar = sum of bottle liters logged today; finishedAt kept for weekly analytics. */
+  recalcBottleLogTargets() {
+    (this.targets.items || []).forEach((item) => {
+      if (item.input !== 'bottle-log') return;
+      const liters = Number(item.bottleLiters) || 2;
+      const log = Array.isArray(this.state.waterLog) ? this.state.waterLog : [];
+      const sum = log.reduce((acc, e) => acc + (Number(e.liters) || liters), 0);
+      const decimals = item.decimals ?? 2;
+      this.state.progress[item.id] = Math.round(sum * 100) / 100;
+      if (decimals === 0) this.state.progress[item.id] = Math.round(sum);
+    });
+  }
+
+  renderProteinLog() {
+    const el = document.getElementById('protein-log');
+    if (!el) return;
+    const protein = this.proteinTarget();
+    const sources = protein?.sources || [];
+    if (!sources.length) {
+      el.hidden = true;
+      el.innerHTML = '';
+      return;
+    }
+    el.hidden = false;
+    const title = protein.sourcesTitle || 'Protein log';
+    el.innerHTML = `
+      <div class="protein-log-head">
+        <h3>${escapeHtml(title)}</h3>
+        <span class="protein-log-hint">Check foods — total updates automatically</span>
+      </div>
+      <ul class="checks">${sources
+        .map((s) => {
+          const done = !!this.state.checks[s.id];
+          return `<li class="check${done ? ' done' : ''}" data-check="${escapeHtml(s.id)}" role="checkbox" aria-checked="${done}" tabindex="0">
+  <span class="box">${icon('check')}</span>
+  <span class="check-text">${escapeHtml(s.label)}</span>
+  <span class="check-meta">+${escapeHtml(String(s.amount))} g</span>
+</li>`;
+        })
+        .join('')}</ul>`;
+  }
+
+  renderWaterLog() {
+    const el = document.getElementById('water-log');
+    if (!el) return;
+    const water = this.waterTarget();
+    if (!water || water.input !== 'bottle-log') {
+      el.hidden = true;
+      el.innerHTML = '';
+      return;
+    }
+    el.hidden = false;
+    const liters = Number(water.bottleLiters) || 2;
+    const log = [...(this.state.waterLog || [])].sort((a, b) =>
+      String(a.finishedAt).localeCompare(String(b.finishedAt))
+    );
+    const title = water.logTitle || 'Bottle finishes';
+    const hint =
+      water.logHint ||
+      'Mark when each 2 L bottle is empty — finish time is stored for weekly averages';
+    const rows = log.length
+      ? `<ul class="bottle-list">${log
+          .map((e) => {
+            const L = Number(e.liters) || liters;
+            return `<li class="bottle-row">
+  <span class="bottle-main">${escapeHtml(String(L))} L bottle</span>
+  <span class="bottle-time">${escapeHtml(formatClock(e.finishedAt))}</span>
+  <button type="button" class="bottle-undo" data-action="remove-bottle" data-id="${escapeHtml(e.id)}" aria-label="Remove bottle finish">Undo</button>
+</li>`;
+          })
+          .join('')}</ul>`
+      : `<p class="bottle-empty">No bottles finished yet today.</p>`;
+
+    el.innerHTML = `
+      <div class="protein-log-head">
+        <h3>${escapeHtml(title)}</h3>
+        <span class="protein-log-hint">${log.length} · ${escapeHtml(String(liters))} L each</span>
+      </div>
+      <p class="water-log-hint">${escapeHtml(hint)}</p>
+      <button type="button" class="bottle-add" data-action="log-bottle">Finished ${escapeHtml(String(liters))} L bottle</button>
+      ${rows}`;
+  }
+
+  logWaterBottle() {
+    const water = this.waterTarget();
+    const liters = Number(water?.bottleLiters) || 2;
+    if (!Array.isArray(this.state.waterLog)) this.state.waterLog = [];
+    this.state.waterLog.push({
+      id: newWaterLogId(),
+      finishedAt: new Date().toISOString(),
+      liters,
+    });
+    this.recalcBottleLogTargets();
+    this.persist();
+    this.renderProgress();
+  }
+
+  removeWaterBottle(id) {
+    this.state.waterLog = (this.state.waterLog || []).filter((e) => e.id !== id);
+    this.recalcBottleLogTargets();
+    this.persist();
+    this.renderProgress();
   }
 
   sectionTasks(section) {
     if (section.type === 'workout-slot') {
       const w = this.displayWorkout;
-      return (w?.exercises || []).map((e, i) => ({
+      const mobilityTasks = this.mobilityTasksForWorkout(w);
+      const exerciseTasks = (w?.exercises || []).map((e, i) => ({
         id: `ex-${w.id}-${i}`,
         text: `${e.name} · ${e.sets}×${e.reps}`,
       }));
+      return [...mobilityTasks, ...exerciseTasks];
     }
-    return section.tasks || [];
+    const out = [];
+    (section.tasks || []).forEach((t) => {
+      if (t.mobilityRoutine) {
+        out.push(...this.mobilityItemTasks(t.mobilityRoutine));
+      } else {
+        out.push(t);
+      }
+    });
+    return out;
+  }
+
+  mobilityRoutine(id) {
+    return this.mobility?.routines?.[id] || null;
+  }
+
+  mobilityCheckId(routineId, itemId) {
+    return `mob-${routineId}-${itemId}`;
+  }
+
+  mobilityItemTasks(routineId) {
+    const routine = this.mobilityRoutine(routineId);
+    if (!routine) return [];
+    return (routine.items || []).map((item) => ({
+      id: this.mobilityCheckId(routineId, item.id),
+      text: item.text,
+    }));
+  }
+
+  mobilityTasksForWorkout(w) {
+    if (!w) return [];
+    const out = [];
+    (w.mobility || []).forEach((entry) => {
+      const routineId = typeof entry === 'string' ? null : entry.routine;
+      if (routineId) out.push(...this.mobilityItemTasks(routineId));
+    });
+    return out;
+  }
+
+  renderMobilityBlock(routineId) {
+    const routine = this.mobilityRoutine(routineId);
+    if (!routine) return '';
+    const items = routine.items || [];
+    let done = 0;
+    items.forEach((item) => {
+      if (this.state.checks[this.mobilityCheckId(routineId, item.id)]) done += 1;
+    });
+    const total = items.length;
+    const allDone = total > 0 && done === total;
+    return `<div class="mobility-block${allDone ? ' done' : ''}">
+  <div class="mobility-block-head">
+    <h4>${escapeHtml(routine.label)}</h4>
+    <span class="mobility-count">${done}/${total}</span>
+  </div>
+  <ul class="checks">${items
+    .map((item) => {
+      const id = this.mobilityCheckId(routineId, item.id);
+      const checked = !!this.state.checks[id];
+      return `<li class="check${checked ? ' done' : ''}" data-check="${escapeHtml(id)}" role="checkbox" aria-checked="${checked}" tabindex="0">
+  <span class="box">${icon('check')}</span>
+  <span class="check-text">${escapeHtml(item.text)}</span>
+</li>`;
+    })
+    .join('')}</ul>
+</div>`;
   }
 
   sectionProgress(section) {
@@ -747,24 +968,48 @@ class Dashboard {
 
   renderChecks(tasks) {
     if (!tasks.length) return '';
-    return `<ul class="checks">${tasks
-      .map((t) => {
-        const done = !!this.state.checks[t.id];
-        return `<li class="check${done ? ' done' : ''}" data-check="${escapeHtml(t.id)}" role="checkbox" aria-checked="${done}" tabindex="0">
+    const parts = [];
+    tasks.forEach((t) => {
+      if (t.mobilityRoutine) {
+        parts.push(this.renderMobilityBlock(t.mobilityRoutine));
+        return;
+      }
+      const done = !!this.state.checks[t.id];
+      parts.push(`<li class="check${done ? ' done' : ''}" data-check="${escapeHtml(t.id)}" role="checkbox" aria-checked="${done}" tabindex="0">
   <span class="box">${icon('check')}</span>
   <span class="check-text">${escapeHtml(t.text)}</span>
-</li>`;
-      })
-      .join('')}</ul>`;
+</li>`);
+    });
+    // Wrap plain checks in one list; mobility blocks stay outside
+    let html = '';
+    let buf = [];
+    const flush = () => {
+      if (!buf.length) return;
+      html += `<ul class="checks">${buf.join('')}</ul>`;
+      buf = [];
+    };
+    parts.forEach((p) => {
+      if (p.startsWith('<div class="mobility-block')) {
+        flush();
+        html += p;
+      } else {
+        buf.push(p);
+      }
+    });
+    flush();
+    return html;
   }
 
   renderWorkoutBody() {
     const w = this.displayWorkout;
     if (!w) return '<p class="sec-note">No workouts configured.</p>';
     const doneToday = this.state.workoutDoneToday;
-    const mobility = (w.mobility || []).length
-      ? `<ul class="mobility-list">${w.mobility.map((m) => `<li>${escapeHtml(m)}</li>`).join('')}</ul>`
-      : '';
+    const mobility = (w.mobility || [])
+      .map((entry) => {
+        const routineId = typeof entry === 'string' ? null : entry.routine;
+        return routineId ? this.renderMobilityBlock(routineId) : '';
+      })
+      .join('');
     const rows = (w.exercises || [])
       .map((e, i) => {
         const id = `ex-${w.id}-${i}`;
@@ -869,12 +1114,25 @@ class Dashboard {
         if (t.id === taskId) return t;
       }
     }
+    for (const item of this.targets.items || []) {
+      if (item.input !== 'checklist') continue;
+      for (const s of item.sources || []) {
+        if (s.id === taskId) {
+          return {
+            id: s.id,
+            text: s.label,
+            target: item.id,
+            amount: s.amount,
+          };
+        }
+      }
+    }
     return null;
   }
 
   adjustTarget(id, dir) {
     const item = (this.targets.items || []).find((t) => t.id === id);
-    if (!item) return;
+    if (!item || item.input === 'checklist' || item.input === 'bottle-log') return;
     const step = item.step || 1;
     let val = Number(this.state.progress[id]) || 0;
     val = Math.max(0, val + dir * step);
@@ -890,16 +1148,20 @@ class Dashboard {
     const was = !!this.state.checks[taskId];
     this.state.checks[taskId] = !was;
     const task = this.findTask(taskId);
-    if (task?.target && task.amount != null) {
-      const item = (this.targets.items || []).find((t) => t.id === task.target);
-      if (item) {
-        let val = Number(this.state.progress[task.target]) || 0;
-        const delta = was ? -task.amount : task.amount;
-        val = Math.max(0, val + delta);
-        const decimals = item.decimals ?? (Number.isInteger(item.step) ? 0 : 2);
-        if (decimals > 0) val = Math.round(val * 100) / 100;
-        this.state.progress[task.target] = val;
-      }
+    const targetItem = task?.target
+      ? (this.targets.items || []).find((t) => t.id === task.target)
+      : null;
+
+    // Checklist targets (protein) are always recomputed from checked sources.
+    if (targetItem?.input === 'checklist') {
+      this.recalcChecklistTargets();
+    } else if (task?.target && task.amount != null && targetItem) {
+      let val = Number(this.state.progress[task.target]) || 0;
+      const delta = was ? -task.amount : task.amount;
+      val = Math.max(0, val + delta);
+      const decimals = targetItem.decimals ?? (Number.isInteger(targetItem.step) ? 0 : 2);
+      if (decimals > 0) val = Math.round(val * 100) / 100;
+      this.state.progress[task.target] = val;
     }
     this.persist();
     this.renderProgress();
@@ -916,6 +1178,9 @@ class Dashboard {
     if (w) {
       (w.exercises || []).forEach((_, i) => {
         this.state.checks[`ex-${w.id}-${i}`] = true;
+      });
+      this.mobilityTasksForWorkout(w).forEach((t) => {
+        this.state.checks[t.id] = true;
       });
     }
     this.state.completedWorkoutIndex = this.state.workoutIndex;
@@ -937,6 +1202,9 @@ class Dashboard {
       if (w) {
         (w.exercises || []).forEach((_, i) => {
           delete this.state.checks[`ex-${w.id}-${i}`];
+        });
+        this.mobilityTasksForWorkout(w).forEach((t) => {
+          delete this.state.checks[t.id];
         });
       }
       this.state.workoutIndex = completedIdx;
@@ -998,6 +1266,8 @@ class Dashboard {
       else if (action === 'dec') this.adjustTarget(btn.getAttribute('data-id'), -1);
       else if (action === 'complete-workout') this.completeWorkout();
       else if (action === 'undo-workout') this.undoWorkout();
+      else if (action === 'log-bottle') this.logWaterBottle();
+      else if (action === 'remove-bottle') this.removeWaterBottle(btn.getAttribute('data-id'));
     });
 
     root.addEventListener('keydown', (e) => {

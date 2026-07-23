@@ -10,8 +10,8 @@
       "duration": "70 min",
       "setsSummary": "11 exercises",
       "mobility": [
-        "Dynamic Warm-up (5 min)",
-        "Post-workout Stretch (5 min)"
+        { "routine": "warmup" },
+        { "routine": "stretch" }
       ],
       "exercises": [
         { "name": "Dead Hang", "sets": "3", "reps": "45s" },
@@ -35,8 +35,8 @@
       "duration": "45–60 min",
       "setsSummary": "Zone-2 + mobility",
       "mobility": [
-        "Dynamic Warm-up (5 min)",
-        "Post-run Stretch (5–10 min)"
+        { "routine": "warmup" },
+        { "routine": "run-stretch" }
       ],
       "exercises": [
         { "name": "Zone-2 Run", "sets": "1", "reps": "5–7 km" },
@@ -56,8 +56,8 @@
       "duration": "70 min",
       "setsSummary": "8 exercises",
       "mobility": [
-        "Dynamic Warm-up (5 min)",
-        "Post-workout Stretch (5 min)"
+        { "routine": "warmup" },
+        { "routine": "stretch" }
       ],
       "exercises": [
         { "name": "Goblet Squat", "sets": "4", "reps": "15" },
@@ -78,8 +78,8 @@
       "duration": "70 min",
       "setsSummary": "10 exercises",
       "mobility": [
-        "Dynamic Warm-up (5 min)",
-        "Post-workout Stretch (5 min)"
+        { "routine": "warmup" },
+        { "routine": "stretch" }
       ],
       "exercises": [
         { "name": "Negative Pull-ups", "sets": "5", "reps": "5" },
@@ -102,8 +102,8 @@
       "duration": "60–100 min",
       "setsSummary": "Progressive distance",
       "mobility": [
-        "Dynamic Warm-up (5 min)",
-        "Post-run Stretch (5–10 min)"
+        { "routine": "warmup" },
+        { "routine": "run-stretch" }
       ],
       "exercises": [
         { "name": "Long Run", "sets": "1", "reps": "see Long Run Progress" },
@@ -119,8 +119,8 @@
       "duration": "75 min",
       "setsSummary": "10 exercises",
       "mobility": [
-        "Dynamic Warm-up (5 min)",
-        "Post-workout Stretch (5 min)"
+        { "routine": "warmup" },
+        { "routine": "stretch" }
       ],
       "exercises": [
         { "name": "Push-ups", "sets": "3", "reps": "Max" },
@@ -143,7 +143,7 @@
       "duration": "45–90 min",
       "setsSummary": "Choose one activity",
       "mobility": [
-        "Full Mobility Routine (15–20 min)"
+        { "routine": "full-mobility" }
       ],
       "exercises": [
         { "name": "Easy Cycling", "sets": "OR", "reps": "45–60 min" },

@@ -1,0 +1,57 @@
+{
+  "title": "Mobility Checklists",
+  "routines": {
+    "warmup": {
+      "label": "Dynamic Warm-up (5 min)",
+      "items": [
+        { "id": "arm-circles", "text": "Arm circles · 20 each way" },
+        { "id": "shoulder-rolls", "text": "Shoulder rolls · 10 each way" },
+        { "id": "leg-swings-fb", "text": "Leg swings front/back · 12/leg" },
+        { "id": "leg-swings-side", "text": "Leg swings side-to-side · 12/leg" },
+        { "id": "hip-openers", "text": "Hip openers / open–close gates · 8/side" },
+        { "id": "bw-squats", "text": "Bodyweight squats · 10–15" },
+        { "id": "inchworms", "text": "Inchworms / walkouts · 5" },
+        { "id": "high-knees", "text": "High knees or marching · 30–45s" }
+      ]
+    },
+    "stretch": {
+      "label": "Post-workout Stretch (5 min)",
+      "items": [
+        { "id": "hip-flexor", "text": "Hip flexor stretch · 30–45s/side" },
+        { "id": "hamstring", "text": "Hamstring stretch · 30–45s/side" },
+        { "id": "quad", "text": "Quad stretch · 30–45s/side" },
+        { "id": "calf", "text": "Calf stretch · 30–45s/side" },
+        { "id": "chest", "text": "Chest / doorway stretch · 30–45s" },
+        { "id": "shoulder", "text": "Cross-body shoulder stretch · 30s/side" },
+        { "id": "thoracic", "text": "Thoracic rotation · 8/side" },
+        { "id": "forward-fold", "text": "Standing forward fold · 30–45s" }
+      ]
+    },
+    "run-stretch": {
+      "label": "Post-run Stretch (5–10 min)",
+      "items": [
+        { "id": "hip-flexor", "text": "Hip flexor stretch · 45s/side" },
+        { "id": "hamstring", "text": "Hamstring stretch · 45s/side" },
+        { "id": "calf", "text": "Calf stretch · 45s/side" },
+        { "id": "quad", "text": "Quad stretch · 45s/side" },
+        { "id": "glute", "text": "Figure-4 / glute stretch · 45s/side" },
+        { "id": "shoulder", "text": "Shoulder mobility · 30s/side" },
+        { "id": "thoracic", "text": "Thoracic rotation · 8/side" }
+      ]
+    },
+    "full-mobility": {
+      "label": "Full Mobility Routine (15–20 min)",
+      "items": [
+        { "id": "cat-cow", "text": "Cat–cow · 10 breaths" },
+        { "id": "worlds-greatest", "text": "World’s greatest stretch · 5/side" },
+        { "id": "hip-90-90", "text": "90/90 hip switches · 8/side" },
+        { "id": "couch-stretch", "text": "Couch / hip flexor stretch · 60s/side" },
+        { "id": "hamstring", "text": "Hamstring stretch · 45s/side" },
+        { "id": "pigeon", "text": "Pigeon or figure-4 · 45s/side" },
+        { "id": "thoracic", "text": "Thoracic openers · 8/side" },
+        { "id": "dead-hang", "text": "Dead hang · 2×30–45s" },
+        { "id": "ankle", "text": "Ankle rocks · 10/side" }
+      ]
+    }
+  }
+}

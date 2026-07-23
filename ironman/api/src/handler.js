@@ -80,6 +80,7 @@ function emptyDay(day) {
     day,
     checks: {},
     progress: {},
+    waterLog: [],
     openSections: {},
     workoutDoneToday: false,
     completedWorkoutIndex: null,
@@ -101,6 +102,7 @@ function dayFromItem(item, day) {
     day: item.day || day,
     checks: item.checks || {},
     progress: item.progress || {},
+    waterLog: Array.isArray(item.waterLog) ? item.waterLog : [],
     openSections: item.openSections || {},
     workoutDoneToday: !!item.workoutDoneToday,
     completedWorkoutIndex:
@@ -158,6 +160,7 @@ async function putState(payload) {
     day,
     checks: payload.checks || {},
     progress: payload.progress || {},
+    waterLog: Array.isArray(payload.waterLog) ? payload.waterLog : [],
     openSections: payload.openSections || {},
     workoutDoneToday: !!payload.workoutDoneToday,
     completedWorkoutIndex:

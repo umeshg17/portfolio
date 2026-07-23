@@ -221,6 +221,116 @@
       color: var(--accent);
       border-color: var(--accent-border);
     }
+    .stat.checklist-mode .stat-ctrls { display: none; }
+    .protein-log {
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    .protein-log-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.55rem;
+    }
+    .protein-log-head h3 {
+      margin: 0;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .protein-log-hint {
+      font-size: 0.72rem;
+      color: var(--muted-2);
+    }
+    .protein-log .checks {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    @media (min-width: 520px) {
+      .protein-log .checks {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    .protein-log .check-meta {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted-2);
+      flex-shrink: 0;
+    }
+    .protein-log .check.done .check-meta {
+      color: var(--accent-bright);
+    }
+    .water-log {
+      margin-top: 0.85rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+    .water-log-hint {
+      margin: 0 0 0.7rem;
+      font-size: 0.78rem;
+      color: var(--muted-2);
+      line-height: 1.4;
+    }
+    .bottle-add {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--radius-sm);
+      background: var(--accent-dim);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-bright);
+      font-weight: 600;
+      margin-bottom: 0.65rem;
+    }
+    .bottle-add:hover { background: rgba(52, 211, 153, 0.18); }
+    .bottle-empty {
+      margin: 0;
+      font-size: 0.82rem;
+      color: var(--muted-2);
+    }
+    .bottle-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+    .bottle-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+    .bottle-main {
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+    .bottle-time {
+      margin-left: auto;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent-bright);
+    }
+    .bottle-undo {
+      font-size: 0.72rem;
+      color: var(--muted-2);
+      padding: 0.2rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .bottle-undo:hover { color: var(--text); border-color: var(--border-strong); }
 
     /* Next up */
     .next-up {
@@ -576,6 +686,36 @@
       background: var(--accent);
       opacity: 0.7;
     }
+    .mobility-block {
+      margin: 0 0 0.85rem;
+      padding: 0.7rem 0.75rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+    .mobility-block.done {
+      border-color: var(--accent-border);
+      background: var(--done-bg);
+    }
+    .mobility-block-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .mobility-block-head h4 {
+      margin: 0;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .mobility-count {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted-2);
+    }
+    .mobility-block .checks { margin: 0; }
+    .section-body > .mobility-block { margin-top: 0.35rem; }
     .wo-actions {
       display: flex;
       flex-wrap: wrap;
@@ -858,6 +998,8 @@
         <span class="progress-pct" id="progress-pct"></span>
       </div>
       <div class="progress-grid" id="progress-grid"></div>
+      <div class="protein-log" id="protein-log" hidden></div>
+      <div class="water-log" id="water-log" hidden></div>
     </div>
 
     <div class="next-up" id="next-up" hidden></div>
