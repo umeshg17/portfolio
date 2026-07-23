@@ -1,0 +1,56 @@
+# Tunable Ironman AWS resources.
+# Edit values here, then run: pulumi up
+# Never put secrets (PIN) in this file — use: pulumi config set --secret ironmanPin XXXX
+
+# AWS resource tags applied to DynamoDB, Lambda, IAM role, and HTTP API
+tags:
+  Project: ironman          # Logical product name for cost / inventory filters
+  ManagedBy: pulumi         # Marks resources as Pulumi-owned (not hand-clicked)
+
+# Daily tracking table: one item per day (DAY#YYYY-MM-DD) + META for cycle/review
+dynamodb:
+  name: ironman-tracker           # Physical DynamoDB table name in AWS
+  billingMode: PAY_PER_REQUEST    # On-demand: no provisioned capacity; cheapest at low traffic
+  hashKey: pk                     # Partition key (e.g. USER#default)
+  rangeKey: sk                    # Sort key (e.g. META or DAY#2026-07-23)
+  attributes:                     # Only keys used in KeySchema need AttributeDefinitions
+    - name: pk
+      type: S                     # S = String
+    - name: sk
+      type: S                     # S = String
+
+# API compute: serves GET/PUT /state and talks to DynamoDB
+lambda:
+  name: ironman-tracker-api       # Physical Lambda function name
+  roleName: ironman-tracker-lambda # IAM role name assumed by the function
+  runtime: nodejs24.x             # Latest stable Node.js Lambda runtime (AL2023)
+  architectures:
+    - arm64                       # Graviton: lower cost than x86 for this workload
+  handler: handler.handler        # file.export — dist/handler.js exports `handler`
+  timeout: 10                     # Max seconds per invoke (API should finish well under this)
+  memorySize: 128                 # MB; raise if cold starts or DynamoDB work needs more CPU
+  codeDir: dist                   # Folder zipped for deploy (from `npm run build:lambda`)
+
+# Public HTTPS front door for the Lambda (API Gateway HTTP API)
+httpApi:
+  name: ironman-tracker-http      # Physical HTTP API name in API Gateway
+  stageName: $default             # Default stage → URL has no /prod path suffix
+  autoDeploy: true                # Push route/integration changes live without a separate deploy step
+  cors:
+    allowOrigins:                 # Browsers allowed to call the API (must match exact Origin)
+      - https://umesh.skalekontrol.com   # Production portfolio / ironman page
+      - http://localhost:5500            # Local Live Server-style static hosting
+      - http://127.0.0.1:5500
+      - http://localhost:8000            # Local python -m http.server etc.
+      - http://127.0.0.1:8000
+    allowHeaders:
+      - Content-Type              # JSON PUT bodies
+      - Authorization             # Bearer <4-digit-pin>
+    allowMethods:
+      - GET                       # Load day state
+      - PUT                       # Save day + meta state
+      - OPTIONS                   # CORS preflight
+    maxAge: 86400                 # Seconds browsers may cache preflight (24h)
+  routes:                         # HTTP method + path → Lambda proxy integration
+    - GET /state                  # ?day=YYYY-MM-DD
+    - PUT /state                  # JSON body with checks, progress, workout fields, etc.

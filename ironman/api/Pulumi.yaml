@@ -1,0 +1,13 @@
+# Pulumi project definition (not stack secrets — those live in Pulumi.<stack>.yaml / config)
+
+name: ironman   # Pulumi project name (used with stack as ironman/ironman)
+description: Ironman daily tracking API (Lambda + API Gateway + DynamoDB)  # Shown in Pulumi CLI / console
+
+runtime:
+  name: nodejs          # Run the program with the Node.js language host
+  options:
+    typescript: true    # Compile/run index.ts directly (no separate tsc step required by Pulumi)
+
+backend:
+  # Where Pulumi stores stack state (must exist / be writable by deploy credentials)
+  url: s3://skalekontrol/pulumi/ironman

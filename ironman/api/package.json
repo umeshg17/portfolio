@@ -1,0 +1,22 @@
+{
+  "name": "ironman-infra",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "build:lambda": "esbuild src/handler.js --bundle --platform=node --target=node24 --outfile=dist/handler.js --minify",
+    "prepulumi": "npm run build:lambda"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1093.0",
+    "@aws-sdk/lib-dynamodb": "^3.1093.0",
+    "@pulumi/aws": "^7.38.0",
+    "@pulumi/pulumi": "^3.253.0",
+    "js-yaml": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "esbuild": "^0.28.1",
+    "typescript": "^5.9.3"
+  }
+}

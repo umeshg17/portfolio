@@ -1,4 +1,6 @@
 const STORAGE_KEY = 'ironman-dashboard-v1';
+const PIN_SESSION_KEY = 'ironman-pin';
+const SYNC_DEBOUNCE_MS = 400;
 
 const ICONS = {
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
@@ -40,6 +42,35 @@ function todayKey() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+function apiBaseUrl() {
+  const base = (window.IRONMAN_API && window.IRONMAN_API.baseUrl) || '';
+  return String(base).replace(/\/$/, '');
+}
+
+function apiConfigured() {
+  return !!apiBaseUrl();
+}
+
+function getSessionPin() {
+  try {
+    return sessionStorage.getItem(PIN_SESSION_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+function setSessionPin(pin) {
+  sessionStorage.setItem(PIN_SESSION_KEY, pin);
+}
+
+function clearSessionPin() {
+  try {
+    sessionStorage.removeItem(PIN_SESSION_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 function defaultState(targets) {
   const progress = {};
   (targets.items || []).forEach((t) => {
@@ -54,16 +85,20 @@ function defaultState(targets) {
     review: {},
     workoutDoneToday: false,
     completedWorkoutIndex: null,
+    updatedAt: null,
   };
 }
 
-function loadState(targets) {
-  let state;
+function readLocalRaw() {
   try {
-    state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
   } catch {
-    state = null;
+    return null;
   }
+}
+
+function loadLocalState(targets) {
+  const state = readLocalRaw();
   const base = defaultState(targets);
   if (!state) return base;
 
@@ -74,6 +109,7 @@ function loadState(targets) {
       workoutIndex: state.workoutIndex ?? 0,
       review: state.review || {},
       openSections: {},
+      updatedAt: state.updatedAt || null,
     };
   }
   return {
@@ -83,11 +119,129 @@ function loadState(targets) {
     checks: state.checks || {},
     openSections: state.openSections || {},
     review: state.review || {},
+    updatedAt: state.updatedAt || null,
   };
 }
 
-function saveState(state) {
+function saveLocalState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function mergeServerState(targets, remote) {
+  const base = defaultState(targets);
+  const meta = remote?.meta || {};
+  const day = remote?.day || {};
+  return {
+    ...base,
+    day: day.day || todayKey(),
+    checks: day.checks || {},
+    progress: { ...base.progress, ...(day.progress || {}) },
+    openSections: day.openSections || {},
+    workoutDoneToday: !!day.workoutDoneToday,
+    completedWorkoutIndex:
+      day.completedWorkoutIndex == null ? null : day.completedWorkoutIndex,
+    workoutIndex: meta.workoutIndex ?? 0,
+    review: meta.review || {},
+    updatedAt: newerTimestamp(meta.updatedAt, day.updatedAt),
+  };
+}
+
+function newerTimestamp(a, b) {
+  if (!a) return b || null;
+  if (!b) return a;
+  return a >= b ? a : b;
+}
+
+function statePayload(state) {
+  return {
+    day: state.day,
+    checks: state.checks || {},
+    progress: state.progress || {},
+    openSections: state.openSections || {},
+    workoutDoneToday: !!state.workoutDoneToday,
+    completedWorkoutIndex:
+      state.completedWorkoutIndex == null ? null : state.completedWorkoutIndex,
+    workoutIndex: state.workoutIndex ?? 0,
+    review: state.review || {},
+  };
+}
+
+async function apiRequest(path, { method = 'GET', body, pin } = {}) {
+  const base = apiBaseUrl();
+  if (!base) throw new Error('API not configured');
+  const headers = {
+    Authorization: `Bearer ${pin}`,
+  };
+  if (body != null) headers['Content-Type'] = 'application/json';
+  const res = await fetch(`${base}${path}`, {
+    method,
+    headers,
+    body: body != null ? JSON.stringify(body) : undefined,
+    cache: 'no-store',
+  });
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+  if (!res.ok) {
+    const err = new Error((data && data.error) || `HTTP ${res.status}`);
+    err.status = res.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
+}
+
+async function fetchRemoteState(pin, day) {
+  return apiRequest(`/state?day=${encodeURIComponent(day)}`, { pin });
+}
+
+async function putRemoteState(pin, state) {
+  return apiRequest('/state', {
+    method: 'PUT',
+    pin,
+    body: statePayload(state),
+  });
+}
+
+/**
+ * Prefer newer server state; if local is newer (or server empty), keep local
+ * and mark for upload (first-run migration / offline catch-up).
+ */
+function resolveBootState(targets, local, remote) {
+  const serverState = mergeServerState(targets, remote);
+  const serverTs = serverState.updatedAt;
+  const localTs = local.updatedAt;
+  const serverHasDayData =
+    Object.keys(serverState.checks || {}).length > 0 ||
+    Object.values(serverState.progress || {}).some((v) => Number(v) > 0) ||
+    serverState.workoutDoneToday ||
+    !!serverTs;
+
+  if (!serverHasDayData && (localTs || Object.keys(local.checks || {}).length)) {
+    return { state: { ...local, day: todayKey() }, shouldUpload: true };
+  }
+  if (localTs && serverTs && localTs > serverTs) {
+    return { state: { ...local, day: todayKey() }, shouldUpload: true };
+  }
+  if (localTs && !serverTs && (local.day === todayKey())) {
+    const localHasData =
+      Object.keys(local.checks || {}).length > 0 ||
+      Object.values(local.progress || {}).some((v) => Number(v) > 0);
+    if (localHasData) {
+      return { state: { ...local, day: todayKey() }, shouldUpload: true };
+    }
+  }
+  return { state: serverState, shouldUpload: false };
+}
+
+function setSyncStatus(text, isError) {
+  const el = document.getElementById('sync-status');
+  if (!el) return;
+  el.textContent = text || '';
+  el.classList.toggle('err', !!isError);
 }
 
 function formatValue(item, value) {
@@ -117,9 +271,134 @@ async function loadJson(path) {
   return res.json();
 }
 
+function readUnlockPin() {
+  const inputs = [...document.querySelectorAll('#unlock-pin input')];
+  return inputs.map((i) => i.value).join('');
+}
+
+function setUnlockError(msg) {
+  const el = document.getElementById('unlock-error');
+  if (el) el.textContent = msg || '';
+}
+
+function setupUnlockForm() {
+  const form = document.getElementById('unlock-form');
+  const inputs = [...document.querySelectorAll('#unlock-pin input')];
+  const submit = document.getElementById('unlock-submit');
+  let resolvePin = null;
+
+  const refreshSubmit = () => {
+    submit.disabled = readUnlockPin().length !== 4;
+  };
+
+  inputs.forEach((input, idx) => {
+    input.addEventListener('input', () => {
+      const digit = input.value.replace(/\D/g, '').slice(-1);
+      input.value = digit;
+      setUnlockError('');
+      if (digit && idx < inputs.length - 1) inputs[idx + 1].focus();
+      refreshSubmit();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !input.value && idx > 0) {
+        inputs[idx - 1].focus();
+      }
+    });
+    input.addEventListener('paste', (e) => {
+      const text = (e.clipboardData || window.clipboardData).getData('text') || '';
+      const digits = text.replace(/\D/g, '').slice(0, 4);
+      if (digits.length < 2) return;
+      e.preventDefault();
+      digits.split('').forEach((d, i) => {
+        if (inputs[i]) inputs[i].value = d;
+      });
+      const focusIdx = Math.min(digits.length, inputs.length - 1);
+      inputs[focusIdx].focus();
+      refreshSubmit();
+    });
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pin = readUnlockPin();
+    if (pin.length !== 4 || !resolvePin) return;
+    const done = resolvePin;
+    resolvePin = null;
+    done(pin);
+  });
+
+  return {
+    waitForPin() {
+      refreshSubmit();
+      inputs[0]?.focus();
+      return new Promise((resolve) => {
+        resolvePin = resolve;
+      });
+    },
+  };
+}
+
+async function unlockWithPin(pin) {
+  setUnlockError('');
+  const submit = document.getElementById('unlock-submit');
+  submit.disabled = true;
+  submit.textContent = 'Checking…';
+  try {
+    await fetchRemoteState(pin, todayKey());
+    setSessionPin(pin);
+    return true;
+  } catch (err) {
+    if (err.status === 401) {
+      setUnlockError('Incorrect PIN');
+      clearSessionPin();
+      document.querySelectorAll('#unlock-pin input').forEach((i) => {
+        i.value = '';
+      });
+      document.querySelector('#unlock-pin input')?.focus();
+    } else {
+      setUnlockError(err.message || 'Could not reach API');
+    }
+    return false;
+  } finally {
+    submit.textContent = 'Unlock';
+    submit.disabled = readUnlockPin().length !== 4;
+  }
+}
+
+async function ensureUnlocked() {
+  if (!apiConfigured()) return null;
+
+  const gate = document.getElementById('unlock-gate');
+  gate.hidden = false;
+
+  let pin = getSessionPin();
+  if (pin.length === 4) {
+    try {
+      await fetchRemoteState(pin, todayKey());
+      gate.hidden = true;
+      return pin;
+    } catch (err) {
+      if (err.status === 401) clearSessionPin();
+    }
+  }
+
+  const unlockForm = setupUnlockForm();
+  while (true) {
+    const entered = await unlockForm.waitForPin();
+    if (await unlockWithPin(entered)) {
+      gate.hidden = true;
+      return entered;
+    }
+  }
+}
+
 async function boot() {
   const titleEl = document.getElementById('title');
+  const appShell = document.getElementById('app-shell');
   try {
+    const pin = await ensureUnlocked();
+    appShell.hidden = false;
+
     const [meta, targets, routine, workouts, milestones] = await Promise.all([
       loadJson('data/meta.json'),
       loadJson('data/targets.json'),
@@ -127,10 +406,44 @@ async function boot() {
       loadJson('data/workouts.json'),
       loadJson('data/milestones.json'),
     ]);
-    const app = new Dashboard({ meta, targets, routine, workouts, milestones });
+
+    const local = loadLocalState(targets);
+    let initialState = local;
+    let shouldUpload = false;
+
+    if (apiConfigured() && pin) {
+      setSyncStatus('Syncing…');
+      try {
+        const remote = await fetchRemoteState(pin, todayKey());
+        const resolved = resolveBootState(targets, local, remote);
+        initialState = resolved.state;
+        shouldUpload = resolved.shouldUpload;
+        setSyncStatus('Synced');
+      } catch (err) {
+        console.error(err);
+        setSyncStatus('Offline · local cache', true);
+      }
+    } else {
+      setSyncStatus(apiConfigured() ? '' : 'Local only');
+    }
+
+    const app = new Dashboard({
+      meta,
+      targets,
+      routine,
+      workouts,
+      milestones,
+      state: initialState,
+      pin,
+    });
     app.render();
+
+    if (shouldUpload && pin) {
+      app.persist({ forceUpload: true });
+    }
   } catch (err) {
     console.error(err);
+    appShell.hidden = false;
     titleEl.className = 'error';
     titleEl.textContent = 'Could not load dashboard data';
     document.getElementById('subtitle').textContent =
@@ -145,8 +458,11 @@ class Dashboard {
     this.routine = data.routine;
     this.workouts = data.workouts;
     this.milestones = data.milestones;
-    this.state = loadState(this.targets);
+    this.state = data.state || loadLocalState(this.targets);
+    this.pin = data.pin || null;
     this._bound = false;
+    this._syncTimer = null;
+    this._syncing = false;
   }
 
   workoutAt(index) {
@@ -172,9 +488,50 @@ class Dashboard {
     return this.currentWorkout;
   }
 
-  persist() {
+  persist(opts = {}) {
     this.state.day = todayKey();
-    saveState(this.state);
+    this.state.updatedAt = new Date().toISOString();
+    saveLocalState(this.state);
+
+    if (!apiConfigured() || !this.pin) return;
+
+    if (opts.forceUpload) {
+      this.flushRemote();
+      return;
+    }
+    clearTimeout(this._syncTimer);
+    this._syncTimer = setTimeout(() => this.flushRemote(), SYNC_DEBOUNCE_MS);
+  }
+
+  async flushRemote() {
+    if (!apiConfigured() || !this.pin) return;
+    if (this._syncing) {
+      this._syncAgain = true;
+      return;
+    }
+    this._syncing = true;
+    setSyncStatus('Saving…');
+    try {
+      const remote = await putRemoteState(this.pin, this.state);
+      const ts = newerTimestamp(remote?.meta?.updatedAt, remote?.day?.updatedAt);
+      if (ts) this.state.updatedAt = ts;
+      saveLocalState(this.state);
+      setSyncStatus('Synced');
+    } catch (err) {
+      console.error(err);
+      if (err.status === 401) {
+        clearSessionPin();
+        setSyncStatus('PIN rejected', true);
+      } else {
+        setSyncStatus('Save failed · local cache', true);
+      }
+    } finally {
+      this._syncing = false;
+      if (this._syncAgain) {
+        this._syncAgain = false;
+        this.flushRemote();
+      }
+    }
   }
 
   render() {
