@@ -128,8 +128,7 @@
     .progress-head {
       display: flex;
       align-items: baseline;
-      justify-content: space-between;
-      gap: 0.5rem;
+      gap: 0.65rem;
       margin-bottom: 0.55rem;
     }
     .progress-head h2 {
@@ -142,19 +141,14 @@
       border: 0;
       padding: 0;
     }
-    .progress-pct {
+    .protein-total {
       font-family: var(--mono);
-      font-size: 0.72rem;
-      color: var(--accent);
+      font-size: 1rem;
+      font-weight: 650;
+      color: var(--accent-bright);
+      letter-spacing: -0.02em;
     }
-    .progress-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.45rem;
-    }
-    @media (min-width: 560px) {
-      .progress-grid { grid-template-columns: repeat(3, 1fr); }
-    }
+    .progress-grid { display: none; }
     .stat {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -270,53 +264,6 @@
     .protein-log .check.done .check-meta {
       color: var(--accent-bright);
     }
-    /* Next up */
-    .next-up {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      background: var(--surface);
-      border: 1px solid var(--accent-border);
-      border-radius: var(--radius);
-      padding: 0.85rem 1rem;
-      margin-bottom: 1.15rem;
-      box-shadow: 0 0 0 1px var(--accent-dim);
-    }
-    .next-up.complete {
-      border-color: var(--accent-border);
-      background: var(--done-bg);
-    }
-    .next-label {
-      font-family: var(--mono);
-      font-size: 0.65rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin: 0 0 0.15rem;
-    }
-    .next-title {
-      margin: 0;
-      font-size: 1.05rem;
-      font-weight: 650;
-      letter-spacing: -0.02em;
-    }
-    .next-meta {
-      margin: 0.15rem 0 0;
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-    .next-icon {
-      flex-shrink: 0;
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 10px;
-      background: var(--accent-dim);
-      color: var(--accent);
-      display: grid;
-      place-items: center;
-    }
-    .next-icon svg { width: 1.25rem; height: 1.25rem; }
-
     /* Timeline sections */
     .timeline {
       display: flex;
@@ -954,14 +901,12 @@
 
     <div class="progress-sticky" id="progress-sticky" hidden>
       <div class="progress-head">
-        <h2 id="targets-title">Today's Progress</h2>
-        <span class="progress-pct" id="progress-pct"></span>
+        <h2 id="targets-title">Protein</h2>
+        <span class="protein-total" id="protein-total">0 g</span>
       </div>
-      <div class="progress-grid" id="progress-grid"></div>
+      <div class="progress-grid" id="progress-grid" hidden></div>
       <div class="protein-log" id="protein-log" hidden></div>
     </div>
-
-    <div class="next-up" id="next-up" hidden></div>
 
     <div class="timeline" id="timeline"></div>
 

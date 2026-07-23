@@ -258,7 +258,6 @@ function setSyncStatus(text, isError) {
 }
 
 function formatValue(item, value) {
-  const decimals = item.decimals ?? (Number.isInteger(item.step) ? 0 : 2);
   const n = Number(value) || 0;
   if (item.display === 'hours') {
     const totalMin = Math.round(n * 60);
@@ -267,15 +266,11 @@ function formatValue(item, value) {
     if (!n) return '0h';
     return m ? `${h}h ${m}m` : `${h}h`;
   }
-  const fixed = decimals > 0 ? n.toFixed(decimals).replace(/\.?0+$/, '') : String(Math.round(n));
-  return fixed;
-}
-
-function formatGoal(item) {
-  if (item.display === 'hours') return `${item.goal}h`;
-  const decimals = item.decimals ?? (Number.isInteger(item.step) ? 0 : 2);
-  if (decimals > 0) return String(item.goal);
-  return String(item.goal);
+  const decimals = item.decimals ?? (item.step != null && !Number.isInteger(item.step) ? 2 : 0);
+  if (decimals > 0) {
+    return n.toFixed(decimals).replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
+  }
+  return String(Math.round(n));
 }
 
 async function loadJson(path) {
@@ -557,7 +552,6 @@ class Dashboard {
     this.renderCycle();
     this.renderLongRun();
     this.renderReview();
-    this.renderNextUp();
     this.bindOnce();
   }
 
@@ -571,7 +565,7 @@ class Dashboard {
     document.getElementById('subtitle').textContent = meta.subtitle || '';
     document.getElementById('phase').textContent = meta.phase || '';
     document.getElementById('footer').textContent = meta.footer || '';
-    document.getElementById('targets-title').textContent = this.targets.title || "Today's Progress";
+    document.getElementById('targets-title').textContent = this.targets.title || 'Protein';
     document.getElementById('longrun-title').textContent =
       this.milestones.longRun?.title || 'Long Run Progress';
     document.getElementById('review-title').textContent =
@@ -582,35 +576,16 @@ class Dashboard {
     const sticky = document.getElementById('progress-sticky');
     sticky.hidden = false;
     this.recalcChecklistTargets();
+    const protein = this.proteinTarget();
+    const val = protein ? Number(this.state.progress[protein.id]) || 0 : 0;
+    const unit = protein?.unit || 'g';
+    const totalEl = document.getElementById('protein-total');
+    if (totalEl) totalEl.textContent = `${formatValue(protein || {}, val)} ${unit}`;
     const grid = document.getElementById('progress-grid');
-    let doneCount = 0;
-    grid.innerHTML = (this.targets.items || [])
-      .map((item) => {
-        const val = Number(this.state.progress[item.id]) || 0;
-        const pct = Math.min(100, Math.round((val / item.goal) * 100));
-        const done = val >= item.goal;
-        if (done) doneCount += 1;
-        const unit = item.unit ? ` ${escapeHtml(item.unit)}` : '';
-        const noCtrls = item.input === 'checklist';
-        const ctrls = noCtrls
-          ? ''
-          : `<div class="stat-ctrls">
-    <button type="button" data-action="dec" data-id="${escapeHtml(item.id)}" aria-label="Decrease ${escapeHtml(item.label)}">−</button>
-    <button type="button" data-action="inc" data-id="${escapeHtml(item.id)}" aria-label="Increase ${escapeHtml(item.label)}">+</button>
-  </div>`;
-        return `<div class="stat${done ? ' done' : ''}${noCtrls ? ' checklist-mode' : ''}" data-target="${escapeHtml(item.id)}">
-  <span class="stat-label">${escapeHtml(item.label)}</span>
-  <div class="stat-value">${escapeHtml(formatValue(item, val))}<span class="goal"> / ${escapeHtml(formatGoal(item))}${unit}</span></div>
-  <div class="stat-bar"><i style="width:${pct}%"></i></div>
-  ${ctrls}
-</div>`;
-      })
-      .join('');
-
-    const total = (this.targets.items || []).length;
-    document.getElementById('progress-pct').textContent =
-      total ? `${doneCount}/${total} targets` : '';
-
+    if (grid) {
+      grid.hidden = true;
+      grid.innerHTML = '';
+    }
     this.renderProteinLog();
   }
 
@@ -647,7 +622,7 @@ class Dashboard {
     el.innerHTML = `
       <div class="protein-log-head">
         <h3>${escapeHtml(title)}</h3>
-        <span class="protein-log-hint">Check foods — total updates automatically</span>
+        <span class="protein-log-hint">Tap foods to add</span>
       </div>
       <ul class="checks">${sources
         .map((s) => {
@@ -778,45 +753,6 @@ class Dashboard {
       if (done < total) return section.id;
     }
     return null;
-  }
-
-  renderNextUp() {
-    const el = document.getElementById('next-up');
-    const sections = this.routine.sections || [];
-    let next = null;
-    for (const section of sections) {
-      const { done, total } = this.sectionProgress(section);
-      if (total && done < total) {
-        next = section;
-        break;
-      }
-    }
-    if (!next) {
-      el.hidden = false;
-      el.className = 'next-up complete';
-      el.innerHTML = `
-        <div class="next-icon">${icon('check')}</div>
-        <div>
-          <p class="next-label">Status</p>
-          <p class="next-title">Day complete</p>
-          <p class="next-meta">All timeline sections checked off.</p>
-        </div>`;
-      return;
-    }
-    const { done, total } = this.sectionProgress(next);
-    const sub =
-      next.type === 'workout-slot' && this.displayWorkout
-        ? `Workout #${this.displayWorkout.id} · ${this.displayWorkout.goal}`
-        : `${done}/${total} done`;
-    el.hidden = false;
-    el.className = 'next-up';
-    el.innerHTML = `
-      <div class="next-icon">${icon(next.icon)}</div>
-      <div>
-        <p class="next-label">Up next</p>
-        <p class="next-title">${escapeHtml(next.title)}</p>
-        <p class="next-meta">${escapeHtml(sub)}</p>
-      </div>`;
   }
 
   renderTimeline() {
@@ -1103,7 +1039,6 @@ class Dashboard {
     this.persist();
     this.renderProgress();
     this.renderTimeline();
-    this.renderNextUp();
     this.renderCycle();
   }
 

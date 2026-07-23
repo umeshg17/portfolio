@@ -1,12 +1,11 @@
 {
-  "title": "Today's Progress",
+  "title": "Protein",
   "items": [
     {
       "id": "protein",
-      "label": "Protein",
+      "label": "Today",
       "icon": "protein",
       "unit": "g",
-      "goal": 130,
       "default": 0,
       "input": "checklist",
       "sourcesTitle": "Protein log",
