@@ -1,6 +1,10 @@
 const STORAGE_KEY = 'ironman-dashboard-v1';
 const PIN_SESSION_KEY = 'ironman-pin';
+const PIN_SESSION_AT_KEY = 'ironman-pin-at';
+const PIN_SESSION_TTL_MS = 60 * 60 * 1000; // 1 hour
 const SYNC_DEBOUNCE_MS = 400;
+
+let sessionExpireTimer = null;
 
 const ICONS = {
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
@@ -51,9 +55,27 @@ function apiConfigured() {
   return !!apiBaseUrl();
 }
 
+function getSessionUnlockedAt() {
+  try {
+    return Number(sessionStorage.getItem(PIN_SESSION_AT_KEY) || 0) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function isSessionExpired(unlockedAt = getSessionUnlockedAt()) {
+  if (!unlockedAt) return true;
+  return Date.now() - unlockedAt > PIN_SESSION_TTL_MS;
+}
+
 function getSessionPin() {
   try {
-    return sessionStorage.getItem(PIN_SESSION_KEY) || '';
+    const pin = sessionStorage.getItem(PIN_SESSION_KEY) || '';
+    if (pin.length !== 4 || isSessionExpired()) {
+      if (pin) clearSessionPin();
+      return '';
+    }
+    return pin;
   } catch {
     return '';
   }
@@ -61,14 +83,36 @@ function getSessionPin() {
 
 function setSessionPin(pin) {
   sessionStorage.setItem(PIN_SESSION_KEY, pin);
+  sessionStorage.setItem(PIN_SESSION_AT_KEY, String(Date.now()));
+  scheduleSessionExpiry();
 }
 
 function clearSessionPin() {
   try {
     sessionStorage.removeItem(PIN_SESSION_KEY);
+    sessionStorage.removeItem(PIN_SESSION_AT_KEY);
   } catch {
     /* ignore */
   }
+  if (sessionExpireTimer) {
+    clearTimeout(sessionExpireTimer);
+    sessionExpireTimer = null;
+  }
+}
+
+/** Relock when the 1-hour unlock window ends (even if the tab stays open). */
+function scheduleSessionExpiry() {
+  if (sessionExpireTimer) {
+    clearTimeout(sessionExpireTimer);
+    sessionExpireTimer = null;
+  }
+  const unlockedAt = getSessionUnlockedAt();
+  if (!unlockedAt) return;
+  const remaining = unlockedAt + PIN_SESSION_TTL_MS - Date.now();
+  sessionExpireTimer = setTimeout(() => {
+    clearSessionPin();
+    location.reload();
+  }, Math.max(0, remaining));
 }
 
 function defaultState(targets) {
@@ -383,6 +427,7 @@ async function ensureUnlocked() {
   if (pin.length === 4) {
     try {
       await fetchRemoteState(pin, todayKey());
+      scheduleSessionExpiry();
       gate.hidden = true;
       return pin;
     } catch (err) {
@@ -516,6 +561,12 @@ class Dashboard {
 
   async flushRemote() {
     if (!apiConfigured() || !this.pin) return;
+    if (!getSessionPin()) {
+      this.pin = null;
+      clearSessionPin();
+      location.reload();
+      return;
+    }
     if (this._syncing) {
       this._syncAgain = true;
       return;
@@ -533,6 +584,7 @@ class Dashboard {
       if (err.status === 401) {
         clearSessionPin();
         setSyncStatus('PIN rejected', true);
+        location.reload();
       } else {
         setSyncStatus('Save failed · local cache', true);
       }
