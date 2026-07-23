@@ -841,12 +841,12 @@ class Dashboard {
   sectionTasks(section) {
     if (section.type === 'workout-slot') {
       const w = this.displayWorkout;
-      const mobilityTasks = this.mobilityTasksForWorkout(w);
+      const { pre, post } = this.splitMobilityTasks(w);
       const exerciseTasks = (w?.exercises || []).map((e, i) => ({
         id: `ex-${w.id}-${i}`,
         text: `${e.name} · ${e.sets}×${e.reps}`,
       }));
-      return [...mobilityTasks, ...exerciseTasks];
+      return [...pre, ...exerciseTasks, ...post];
     }
     const out = [];
     (section.tasks || []).forEach((t) => {
@@ -876,14 +876,24 @@ class Dashboard {
     }));
   }
 
-  mobilityTasksForWorkout(w) {
-    if (!w) return [];
-    const out = [];
+  splitMobilityTasks(w) {
+    const preIds = new Set(['warmup']);
+    const pre = [];
+    const post = [];
+    if (!w) return { pre, post };
     (w.mobility || []).forEach((entry) => {
       const routineId = typeof entry === 'string' ? null : entry.routine;
-      if (routineId) out.push(...this.mobilityItemTasks(routineId));
+      if (!routineId) return;
+      const tasks = this.mobilityItemTasks(routineId);
+      if (preIds.has(routineId)) pre.push(...tasks);
+      else post.push(...tasks);
     });
-    return out;
+    return { pre, post };
+  }
+
+  mobilityTasksForWorkout(w) {
+    const { pre, post } = this.splitMobilityTasks(w);
+    return [...pre, ...post];
   }
 
   renderMobilityBlock(routineId) {
@@ -1103,12 +1113,16 @@ class Dashboard {
     const w = this.displayWorkout;
     if (!w) return '<p class="sec-note">No workouts configured.</p>';
     const doneToday = this.state.workoutDoneToday;
-    const mobility = (w.mobility || [])
-      .map((entry) => {
-        const routineId = typeof entry === 'string' ? null : entry.routine;
-        return routineId ? this.renderMobilityBlock(routineId) : '';
-      })
-      .join('');
+    const preIds = new Set(['warmup']);
+    const preMobility = [];
+    const postMobility = [];
+    (w.mobility || []).forEach((entry) => {
+      const routineId = typeof entry === 'string' ? null : entry.routine;
+      if (!routineId) return;
+      const html = this.renderMobilityBlock(routineId);
+      if (preIds.has(routineId)) preMobility.push(html);
+      else postMobility.push(html);
+    });
     const rows = (w.exercises || [])
       .map((e, i) => {
         const id = `ex-${w.id}-${i}`;
@@ -1144,11 +1158,12 @@ class Dashboard {
     <li>${escapeHtml(w.cardio)}</li>
     <li>${escapeHtml(w.setsSummary || '')}</li>
   </ul>
-  ${mobility}
+  ${preMobility.join('')}
   <table class="ex-table">
     <thead><tr><th>Exercise</th><th>Sets</th><th>Reps</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>
+  ${postMobility.join('')}
   <div class="wo-actions">
     <button type="button" class="btn btn-primary${doneToday ? ' done-state' : ''}" data-action="complete-workout" ${doneToday ? 'disabled' : ''}>
       ${escapeHtml(doneLabel)}

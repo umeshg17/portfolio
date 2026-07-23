@@ -10,8 +10,7 @@
       "duration": "70 min",
       "setsSummary": "11 exercises",
       "mobility": [
-        { "routine": "warmup" },
-        { "routine": "stretch" }
+        { "routine": "warmup" }
       ],
       "exercises": [
         { "name": "Dead Hang", "sets": "3", "reps": "45s" },
@@ -35,8 +34,7 @@
       "duration": "45–60 min",
       "setsSummary": "Zone-2 + mobility",
       "mobility": [
-        { "routine": "warmup" },
-        { "routine": "run-stretch" }
+        { "routine": "warmup" }
       ],
       "exercises": [
         { "name": "Zone-2 Run", "sets": "1", "reps": "5–7 km" },
@@ -56,8 +54,7 @@
       "duration": "70 min",
       "setsSummary": "8 exercises",
       "mobility": [
-        { "routine": "warmup" },
-        { "routine": "stretch" }
+        { "routine": "warmup" }
       ],
       "exercises": [
         { "name": "Goblet Squat", "sets": "4", "reps": "15" },
@@ -78,8 +75,7 @@
       "duration": "70 min",
       "setsSummary": "10 exercises",
       "mobility": [
-        { "routine": "warmup" },
-        { "routine": "stretch" }
+        { "routine": "warmup" }
       ],
       "exercises": [
         { "name": "Negative Pull-ups", "sets": "5", "reps": "5" },
@@ -102,8 +98,7 @@
       "duration": "60–100 min",
       "setsSummary": "Progressive distance",
       "mobility": [
-        { "routine": "warmup" },
-        { "routine": "run-stretch" }
+        { "routine": "warmup" }
       ],
       "exercises": [
         { "name": "Long Run", "sets": "1", "reps": "see Long Run Progress" },
@@ -119,8 +114,7 @@
       "duration": "75 min",
       "setsSummary": "10 exercises",
       "mobility": [
-        { "routine": "warmup" },
-        { "routine": "stretch" }
+        { "routine": "warmup" }
       ],
       "exercises": [
         { "name": "Push-ups", "sets": "3", "reps": "Max" },

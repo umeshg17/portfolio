@@ -33,35 +33,6 @@
       "input": "bottle-log",
       "bottleLiters": 2,
       "logTitle": "Bottle finishes"
-    },
-    {
-      "id": "vegetables",
-      "label": "Vegetables",
-      "icon": "veg",
-      "unit": "bowls",
-      "goal": 2,
-      "step": 1,
-      "default": 0
-    },
-    {
-      "id": "fruit",
-      "label": "Fruit",
-      "icon": "fruit",
-      "unit": "",
-      "goal": 2,
-      "step": 1,
-      "default": 0
-    },
-    {
-      "id": "sleep",
-      "label": "Sleep",
-      "icon": "sleep",
-      "unit": "h",
-      "goal": 8,
-      "step": 0.25,
-      "default": 0,
-      "decimals": 2,
-      "display": "hours"
     }
   ]
 }

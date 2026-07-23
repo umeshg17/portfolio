@@ -5,24 +5,14 @@
       "id": "wake",
       "title": "Wake Up",
       "icon": "sun",
-      "tasks": [
-        { "id": "wake-water", "text": "Drink water 500–700 ml" },
-        { "id": "wake-walk", "text": "Walk 5–10 min" },
-        { "id": "wake-sun", "text": "Get sunlight 10–15 min" },
-        { "id": "wake-coffee", "text": "Black coffee (optional)" },
-        { "id": "wake-phone", "text": "Don't use phone for first 30–45 min" }
-      ]
-    },
-    {
-      "id": "morning",
-      "title": "Morning Routine",
-      "icon": "morning",
-      "tasks": [
-        { "id": "morning-hygiene", "text": "Hygiene / shower" },
-        { "id": "morning-clothes", "text": "Get dressed for work" },
-        { "id": "morning-bag", "text": "Pack bag / keys / bottle" },
-        { "id": "morning-ready", "text": "Prepare for work" }
-      ]
+      "suggestions": [
+        "Drink water 500–700 ml",
+        "Walk 5–10 min",
+        "Get sunlight 10–15 min",
+        "Black coffee (optional)",
+        "Don't use phone for first 30–45 min"
+      ],
+      "tasks": []
     },
     {
       "id": "breakfast",
@@ -33,11 +23,10 @@
       "suggestions": [
         "2 boiled eggs (~12 g)",
         "Oats (~6 g)",
-        "Milk optional (~8 g)"
+        "Milk optional (~8 g)",
+        "Fruit"
       ],
-      "tasks": [
-        { "id": "bf-fruit", "text": "Fruit", "target": "fruit", "amount": 1 }
-      ]
+      "tasks": []
     },
     {
       "id": "office",
@@ -47,10 +36,11 @@
         "label": "Every hour",
         "items": ["Stand up", "Walk 2–3 minutes", "Drink water"]
       },
-      "tasks": [
-        { "id": "office-standup", "text": "Hourly stand + walk (track through day)" },
-        { "id": "office-water", "text": "Sip from bottle through the morning" }
-      ]
+      "suggestions": [
+        "Hourly stand + short walk",
+        "Sip from bottle through the morning"
+      ],
+      "tasks": []
     },
     {
       "id": "lunch",
@@ -76,32 +66,42 @@
       },
       "suggestions": [
         "Paneer / soya / dal portion",
-        "Curd / yogurt 100 g (~6 g)"
+        "Curd / yogurt 100 g (~6 g)",
+        "1 bowl vegetables",
+        "Water with / after meal"
       ],
-      "tasks": [
-        { "id": "lunch-veg", "text": "1 bowl vegetables", "target": "vegetables", "amount": 1 },
-        { "id": "lunch-water", "text": "Water with / after meal" }
-      ]
+      "tasks": []
     },
     {
       "id": "afternoon",
       "title": "Afternoon",
       "icon": "afternoon",
-      "tasks": [
-        { "id": "aft-stand", "text": "Continue hourly stand + walk" },
-        { "id": "aft-water", "text": "Keep sipping from bottle" },
-        { "id": "aft-snack", "text": "Light snack if hungry (optional)" }
-      ]
+      "suggestions": [
+        "Continue hourly stand + walk",
+        "Keep sipping from bottle",
+        "Light snack if hungry (optional)"
+      ],
+      "tasks": []
     },
     {
       "id": "preworkout",
       "title": "Pre-workout",
       "icon": "bolt",
+      "reminder": {
+        "label": "Timing gaps",
+        "items": [
+          "Snack → wait 30–60 min → warm-up (don’t eat and warm up together)",
+          "Warm-up → start workout/run immediately after (no long gap)",
+          "Finish session → whey within 30–60 min → then stretch"
+        ]
+      },
+      "suggestions": [
+        "Banana — 30–60 min before warm-up",
+        "Honey (optional) — with the snack"
+      ],
       "tasks": [
-        { "id": "pre-banana", "text": "Banana", "target": "fruit", "amount": 1 },
-        { "id": "pre-honey", "text": "Honey (optional)" },
         { "id": "pre-water", "text": "Water" },
-        { "id": "pre-warmup", "text": "Dynamic warm-up (5 min)", "mobilityRoutine": "warmup" }
+        { "id": "pre-warmup", "text": "Dynamic warm-up (5 min) — just before workout/run", "mobilityRoutine": "warmup" }
       ]
     },
     {
@@ -109,19 +109,20 @@
       "title": "Workout",
       "icon": "workout",
       "primary": true,
-      "type": "workout-slot"
+      "type": "workout-slot",
+      "note": "Start right after warm-up — keep the gap under ~5 min"
     },
     {
       "id": "postworkout",
       "title": "Post-workout",
       "icon": "recover",
-      "note": "Mark whey in Protein log above",
+      "note": "Within 30–60 min of finishing: mark whey in Protein log, then stretch",
       "suggestions": [
-        "Whey protein 1 scoop (~24 g)"
+        "Whey protein 1 scoop (~24 g) — within 30–60 min post"
       ],
       "tasks": [
         { "id": "post-water", "text": "Water" },
-        { "id": "post-stretch", "text": "Post-workout stretch (5 min)", "mobilityRoutine": "stretch" }
+        { "id": "post-stretch", "text": "Post-workout stretch (5 min) — after whey or right after session", "mobilityRoutine": "stretch" }
       ]
     },
     {
@@ -131,13 +132,12 @@
       "proteinTarget": "~30 g",
       "note": "Mark protein in Protein log above",
       "suggestions": [
-        "Paneer / high-protein portion (~30 g)"
+        "Paneer / high-protein portion (~30 g)",
+        "Vegetables (1 bowl)",
+        "Roti / light carbs",
+        "Water"
       ],
-      "tasks": [
-        { "id": "din-veg", "text": "Vegetables (1 bowl)", "target": "vegetables", "amount": 1 },
-        { "id": "din-roti", "text": "Roti / light carbs" },
-        { "id": "din-water", "text": "Water" }
-      ]
+      "tasks": []
     },
     {
       "id": "night",
@@ -149,15 +149,6 @@
         { "id": "night-bottle", "text": "Fill water bottle for tomorrow" },
         { "id": "night-phone", "text": "Phone away / wind down" },
         { "id": "night-bed", "text": "Sleep before target bedtime" }
-      ]
-    },
-    {
-      "id": "sleep",
-      "title": "Sleep",
-      "icon": "sleep",
-      "tasks": [
-        { "id": "sleep-log", "text": "Log sleep hours in Today's Progress" },
-        { "id": "sleep-done", "text": "Lights out — day complete" }
       ]
     }
   ]
