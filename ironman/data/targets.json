@@ -19,7 +19,7 @@
         { "id": "ps-curd-100", "label": "Curd / yogurt 100 g", "amount": 6 },
         { "id": "ps-oats", "label": "Oats (1 bowl)", "amount": 6 },
         { "id": "ps-dal", "label": "Dal (1 bowl)", "amount": 9 },
-        { "id": "ps-protein-bar", "label": "Protein bar", "amount": 20 }
+        { "id": "ps-protein-bar", "label": "Protein bar", "amount": 5 }
       ]
     },
     {
@@ -32,8 +32,7 @@
       "decimals": 2,
       "input": "bottle-log",
       "bottleLiters": 2,
-      "logTitle": "Bottle finishes",
-      "logHint": "Mark when a 2 L bottle is empty — time is saved for weekly averages (morning finishes often include yesterday’s water)"
+      "logTitle": "Bottle finishes"
     },
     {
       "id": "vegetables",
@@ -51,15 +50,6 @@
       "unit": "",
       "goal": 2,
       "step": 1,
-      "default": 0
-    },
-    {
-      "id": "steps",
-      "label": "Steps",
-      "icon": "steps",
-      "unit": "",
-      "goal": 10000,
-      "step": 500,
       "default": 0
     },
     {

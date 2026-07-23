@@ -92,6 +92,7 @@ function emptyMeta() {
   return {
     workoutIndex: 0,
     review: {},
+    lastBottleFinishedAt: null,
     updatedAt: null,
   };
 }
@@ -116,6 +117,7 @@ function metaFromItem(item) {
   return {
     workoutIndex: item.workoutIndex ?? 0,
     review: item.review || {},
+    lastBottleFinishedAt: item.lastBottleFinishedAt || null,
     updatedAt: item.updatedAt || null,
   };
 }
@@ -151,6 +153,7 @@ async function putState(payload) {
     sk: 'META',
     workoutIndex: payload.workoutIndex ?? 0,
     review: payload.review || {},
+    lastBottleFinishedAt: payload.lastBottleFinishedAt || null,
     updatedAt: now,
   };
 

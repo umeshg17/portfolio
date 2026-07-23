@@ -6,11 +6,11 @@
       "title": "Wake Up",
       "icon": "sun",
       "tasks": [
-        { "id": "wake-water", "text": "Drink water — log bottle finishes above when empty" },
+        { "id": "wake-water", "text": "Drink water 500–700 ml" },
         { "id": "wake-walk", "text": "Walk 5–10 min" },
         { "id": "wake-sun", "text": "Get sunlight 10–15 min" },
         { "id": "wake-coffee", "text": "Black coffee (optional)" },
-        { "id": "wake-phone", "text": "Don't use phone immediately" }
+        { "id": "wake-phone", "text": "Don't use phone for first 30–45 min" }
       ]
     },
     {
@@ -47,8 +47,7 @@
       },
       "tasks": [
         { "id": "office-standup", "text": "Hourly stand + walk (track through day)" },
-        { "id": "office-water", "text": "Sip from bottle through the morning" },
-        { "id": "office-steps", "text": "Accumulate steps at desk breaks", "target": "steps", "amount": 2000 }
+        { "id": "office-water", "text": "Sip from bottle through the morning" }
       ]
     },
     {
@@ -85,9 +84,8 @@
       "icon": "afternoon",
       "tasks": [
         { "id": "aft-stand", "text": "Continue hourly stand + walk" },
-        { "id": "aft-water", "text": "Keep sipping — mark bottle when empty" },
-        { "id": "aft-snack", "text": "Light snack if hungry (optional)" },
-        { "id": "aft-steps", "text": "Close remaining work-day steps", "target": "steps", "amount": 2000 }
+        { "id": "aft-water", "text": "Keep sipping from bottle" },
+        { "id": "aft-snack", "text": "Light snack if hungry (optional)" }
       ]
     },
     {
