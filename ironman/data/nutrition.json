@@ -1,0 +1,34 @@
+{
+  "title": "Nutrition Reference",
+  "dailyProtein": "130 g",
+  "meals": {
+    "breakfast": {
+      "proteinTarget": "25–30 g",
+      "estimatedProtein": 28,
+      "items": [
+        { "name": "2 boiled eggs", "protein": 12 },
+        { "name": "Oats", "protein": 6 },
+        { "name": "Fruit", "protein": 0 },
+        { "name": "Milk (optional)", "protein": 8 }
+      ]
+    },
+    "lunch": {
+      "plate": {
+        "protein": ["Paneer", "Dal", "Soya"],
+        "vegetables": ["Salad", "Beans", "Carrot", "Broccoli"],
+        "carbs": ["Rice", "Roti", "Millets"]
+      },
+      "after": { "name": "100 g curd/yogurt", "protein": 6 }
+    },
+    "preworkout": ["Banana", "Honey (optional)", "Water"],
+    "postworkout": [{ "name": "Whey protein", "protein": 24 }, "Water"],
+    "dinner": {
+      "priority": "Protein first",
+      "items": ["Paneer", "Vegetables", "Roti"]
+    }
+  },
+  "notes": [
+    "Edit this file as Phase 2 / Ironman nutrition evolves.",
+    "Timeline checklists in routine.json are what the dashboard executes."
+  ]
+}

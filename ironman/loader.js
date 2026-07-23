@@ -1,3 +1,31 @@
+const STORAGE_KEY = 'ironman-dashboard-v1';
+
+const ICONS = {
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+  morning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20h16M6 20V10l6-6 6 6v10"/><path d="M10 20v-4h4v4"/></svg>',
+  breakfast: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><path d="M6 1v3M10 1v3M14 1v3"/></svg>',
+  office: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
+  lunch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2M7 2v20M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>',
+  afternoon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h8l-1 8 10-12h-8l1-8z"/></svg>',
+  workout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11M4 9v6M2 10v4M20 9v6M22 10v4"/></svg>',
+  recover: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v6l3 2"/><path d="M12 21a9 9 0 100-18 9 9 0 000 18z"/></svg>',
+  dinner: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 21a9 9 0 100-18"/><path d="M12 3c2 3.5 2 7.5 0 11s-2 7.5 0 7"/></svg>',
+  night: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 14.5A8.5 8.5 0 1110.5 3 7 7 0 0021 14.5z"/></svg>',
+  sleep: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 18h18M5 18V10l7-5 7 5v8"/><path d="M9 18v-4h6v4"/></svg>',
+  protein: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>',
+  water: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3s6 6.5 6 11a6 6 0 11-12 0c0-4.5 6-11 6-11z"/></svg>',
+  veg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22V11M12 11C8 11 5 8 5 5c4 0 7 3 7 6zm0 0c4 0 7-3 7-6-4 0-7 3-7 6z"/></svg>',
+  fruit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4c-2 0-3 1.5-3 1.5S7 4 5.5 5.5 5 9 7 11c1.5 1.5 3 2 5 7 2-5 3.5-5.5 5-7 2-2 1.5-4 .5-5.5S14 4 12 4z"/><path d="M12 4c0-1.5 1-2.5 2.5-3"/></svg>',
+  steps: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 16l3-8 3 4 3-8 3 8 3-4 1 8"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>',
+  chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>',
+};
+
+function icon(name) {
+  return ICONS[name] || ICONS.sun;
+}
+
 function escapeHtml(str) {
   if (str == null) return '';
   return String(str)
@@ -7,156 +35,631 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
-function listHtml(items, className) {
-  if (!items || !items.length) return '';
-  const cls = className ? ` class="${className}"` : '';
-  return `<ul${cls}>${items.map((x) => `<li>${escapeHtml(x)}</li>`).join('')}</ul>`;
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-async function loadPlan() {
+function defaultState(targets) {
+  const progress = {};
+  (targets.items || []).forEach((t) => {
+    progress[t.id] = t.default ?? 0;
+  });
+  return {
+    day: todayKey(),
+    checks: {},
+    progress,
+    workoutIndex: 0,
+    openSections: {},
+    review: {},
+    workoutDoneToday: false,
+    completedWorkoutIndex: null,
+  };
+}
+
+function loadState(targets) {
+  let state;
+  try {
+    state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  } catch {
+    state = null;
+  }
+  const base = defaultState(targets);
+  if (!state) return base;
+
+  // Preserve cycle + review across days; reset daily checks/progress.
+  if (state.day !== todayKey()) {
+    return {
+      ...base,
+      workoutIndex: state.workoutIndex ?? 0,
+      review: state.review || {},
+      openSections: {},
+    };
+  }
+  return {
+    ...base,
+    ...state,
+    progress: { ...base.progress, ...(state.progress || {}) },
+    checks: state.checks || {},
+    openSections: state.openSections || {},
+    review: state.review || {},
+  };
+}
+
+function saveState(state) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function formatValue(item, value) {
+  const decimals = item.decimals ?? (Number.isInteger(item.step) ? 0 : 2);
+  const n = Number(value) || 0;
+  if (item.display === 'hours') {
+    const totalMin = Math.round(n * 60);
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    if (!n) return '0h';
+    return m ? `${h}h ${m}m` : `${h}h`;
+  }
+  const fixed = decimals > 0 ? n.toFixed(decimals).replace(/\.?0+$/, '') : String(Math.round(n));
+  return fixed;
+}
+
+function formatGoal(item) {
+  if (item.display === 'hours') return `${item.goal}h`;
+  const decimals = item.decimals ?? (Number.isInteger(item.step) ? 0 : 2);
+  if (decimals > 0) return String(item.goal);
+  return String(item.goal);
+}
+
+async function loadJson(path) {
+  const res = await fetch(`${path}?v=${Date.now()}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
+  return res.json();
+}
+
+async function boot() {
   const titleEl = document.getElementById('title');
   try {
-    const res = await fetch(`ironman.yaml?v=${Date.now()}`, { cache: 'no-store' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = jsyaml.load(await res.text());
-    render(data);
+    const [meta, targets, routine, workouts, milestones] = await Promise.all([
+      loadJson('data/meta.json'),
+      loadJson('data/targets.json'),
+      loadJson('data/routine.json'),
+      loadJson('data/workouts.json'),
+      loadJson('data/milestones.json'),
+    ]);
+    const app = new Dashboard({ meta, targets, routine, workouts, milestones });
+    app.render();
   } catch (err) {
     console.error(err);
     titleEl.className = 'error';
-    titleEl.textContent = 'Could not load ironman.yaml';
-    document.getElementById('description').textContent =
-      'Open this page via a local HTTP server (not file://), or check the console.';
+    titleEl.textContent = 'Could not load dashboard data';
+    document.getElementById('subtitle').textContent =
+      'Open via a local HTTP server (not file://), or check the console.';
   }
 }
 
-function render(data) {
-  const meta = data.meta || {};
-  document.title = meta.title || 'Ironman Plan';
-  document.getElementById('badge').textContent = meta.badge || '';
-  const titleEl = document.getElementById('title');
-  titleEl.className = '';
-  titleEl.textContent = meta.title || '';
-  document.getElementById('description').textContent = meta.description || '';
-  document.getElementById('footer').textContent = meta.footer || '';
+class Dashboard {
+  constructor(data) {
+    this.meta = data.meta;
+    this.targets = data.targets;
+    this.routine = data.routine;
+    this.workouts = data.workouts;
+    this.milestones = data.milestones;
+    this.state = loadState(this.targets);
+    this._bound = false;
+  }
 
-  const habits = data.habits || {};
-  document.getElementById('habits-title').textContent = habits.title || '';
-  document.getElementById('habits').innerHTML = (habits.items || [])
-    .map(
-      (h) => `<article class="habit">
-  <h3>${escapeHtml(h.name)}</h3>
-  <p class="target">${escapeHtml(h.target)}</p>
-  ${listHtml(h.details)}
-</article>`
-    )
-    .join('');
+  workoutAt(index) {
+    const items = this.workouts.items || [];
+    if (!items.length) return null;
+    const i = ((index % items.length) + items.length) % items.length;
+    return items[i];
+  }
 
-  const workouts = data.workouts || {};
-  document.getElementById('workouts-title').textContent = workouts.title || '';
-  document.getElementById('workouts').innerHTML = (workouts.items || [])
-    .map((w) => {
-      const dayType = w.day_type
-        ? `<p class="day-type">${escapeHtml(w.day_type)}</p>`
-        : '';
-      const mobility =
-        w.mobility && w.mobility.length
-          ? `<div class="block">
-  <h4>Mobility</h4>
-  ${listHtml(w.mobility, 'checks')}
-</div>`
-          : '';
-      return `<article class="workout">
-  <header>
-    <span class="num">${escapeHtml(w.id)}</span>
-    <div>
-      <h3>${escapeHtml(w.goal)}</h3>
-      ${dayType}
-      <ul class="meta">
-        <li>${escapeHtml(w.cardio)}</li>
-        <li>${escapeHtml(w.duration)}</li>
-      </ul>
-    </div>
-  </header>
-  ${mobility}
-  <div class="block">
-    <h4>Exercises</h4>
-    <ul class="ex">${(w.exercises || []).map((e) => `<li>${escapeHtml(e)}</li>`).join('')}</ul>
+  get currentWorkout() {
+    return this.workoutAt(this.state.workoutIndex);
+  }
+
+  get nextWorkout() {
+    return this.workoutAt(this.state.workoutIndex + 1);
+  }
+
+  /** Workout shown in today's timeline slot (completed session if already logged). */
+  get displayWorkout() {
+    if (this.state.workoutDoneToday && this.state.completedWorkoutIndex != null) {
+      return this.workoutAt(this.state.completedWorkoutIndex);
+    }
+    return this.currentWorkout;
+  }
+
+  persist() {
+    this.state.day = todayKey();
+    saveState(this.state);
+  }
+
+  render() {
+    this.renderMeta();
+    this.renderProgress();
+    this.renderTimeline();
+    this.renderCycle();
+    this.renderLongRun();
+    this.renderReview();
+    this.renderNextUp();
+    this.bindOnce();
+  }
+
+  renderMeta() {
+    const { meta } = this;
+    document.title = `${meta.title || 'Daily Execution'} — Phase 1`;
+    document.getElementById('badge').textContent = meta.badge || '';
+    const titleEl = document.getElementById('title');
+    titleEl.className = '';
+    titleEl.textContent = meta.title || '';
+    document.getElementById('subtitle').textContent = meta.subtitle || '';
+    document.getElementById('phase').textContent = meta.phase || '';
+    document.getElementById('footer').textContent = meta.footer || '';
+    document.getElementById('targets-title').textContent = this.targets.title || "Today's Progress";
+    document.getElementById('longrun-title').textContent =
+      this.milestones.longRun?.title || 'Long Run Progress';
+    document.getElementById('review-title').textContent =
+      this.milestones.weeklyReview?.title || 'Weekly Review';
+  }
+
+  renderProgress() {
+    const sticky = document.getElementById('progress-sticky');
+    sticky.hidden = false;
+    const grid = document.getElementById('progress-grid');
+    let doneCount = 0;
+    grid.innerHTML = (this.targets.items || [])
+      .map((item) => {
+        const val = Number(this.state.progress[item.id]) || 0;
+        const pct = Math.min(100, Math.round((val / item.goal) * 100));
+        const done = val >= item.goal;
+        if (done) doneCount += 1;
+        const unit = item.unit ? ` ${escapeHtml(item.unit)}` : '';
+        return `<div class="stat${done ? ' done' : ''}" data-target="${escapeHtml(item.id)}">
+  <span class="stat-label">${escapeHtml(item.label)}</span>
+  <div class="stat-value">${escapeHtml(formatValue(item, val))}<span class="goal"> / ${escapeHtml(formatGoal(item))}${unit}</span></div>
+  <div class="stat-bar"><i style="width:${pct}%"></i></div>
+  <div class="stat-ctrls">
+    <button type="button" data-action="dec" data-id="${escapeHtml(item.id)}" aria-label="Decrease ${escapeHtml(item.label)}">−</button>
+    <button type="button" data-action="inc" data-id="${escapeHtml(item.id)}" aria-label="Increase ${escapeHtml(item.label)}">+</button>
   </div>
-</article>`;
-    })
-    .join('');
+</div>`;
+      })
+      .join('');
 
-  renderMobility(data.mobility || {});
-
-  const running = data.running || {};
-  document.getElementById('running-title').textContent = running.title || '';
-  const cols = running.columns || [];
-  const rows = running.rows || [];
-  document.getElementById('running').innerHTML = `<div class="habit-grid">${rows
-    .map((r) => {
-      const month = r[0];
-      const pairs = cols
-        .slice(1)
-        .map((col, i) => `<li><strong>${escapeHtml(col)}:</strong> ${escapeHtml(r[i + 1])}</li>`)
-        .join('');
-      return `<article class="habit">
-  <h3>Month ${escapeHtml(month)}</h3>
-  <ul>${pairs}</ul>
-</article>`;
-    })
-    .join('')}</div>`;
-}
-
-function renderMobility(mobility) {
-  const section = document.getElementById('mobility-section');
-  if (!mobility.title) {
-    section.hidden = true;
-    return;
+    const total = (this.targets.items || []).length;
+    document.getElementById('progress-pct').textContent =
+      total ? `${doneCount}/${total} targets` : '';
   }
-  section.hidden = false;
-  document.getElementById('mobility-title').textContent = mobility.title;
 
-  document.getElementById('mobility-intro').innerHTML = listHtml(mobility.intro || []);
+  sectionTasks(section) {
+    if (section.type === 'workout-slot') {
+      const w = this.displayWorkout;
+      return (w?.exercises || []).map((e, i) => ({
+        id: `ex-${w.id}-${i}`,
+        text: `${e.name} · ${e.sets}×${e.reps}`,
+      }));
+    }
+    return section.tasks || [];
+  }
 
-  const schedule = mobility.schedule || {};
-  document.getElementById('mobility-schedule-title').textContent = schedule.title || '';
-  document.getElementById('mobility-schedule').innerHTML = (schedule.items || [])
-    .map(
-      (s) => `<article class="habit">
-  <h3>${escapeHtml(s.when)}</h3>
-  <p class="target">${escapeHtml(s.duration)}</p>
-  ${listHtml([s.what])}
-</article>`
-    )
-    .join('');
+  sectionProgress(section) {
+    const tasks = this.sectionTasks(section);
+    if (!tasks.length) return { done: 0, total: 0 };
+    let done = 0;
+    tasks.forEach((t) => {
+      if (this.state.checks[t.id]) done += 1;
+    });
+    if (section.type === 'workout-slot' && this.state.workoutDoneToday) {
+      return { done: tasks.length, total: tasks.length };
+    }
+    return { done, total: tasks.length };
+  }
 
-  const checklist = mobility.checklist || {};
-  document.getElementById('mobility-checklist-title').textContent = checklist.title || '';
-  document.getElementById('mobility-checklist').innerHTML = (checklist.items || [])
-    .map(
-      (c) => `<article class="habit">
-  <h3>${escapeHtml(c.day)}</h3>
-  ${listHtml(c.checks, 'checks')}
-</article>`
-    )
-    .join('');
+  isSectionOpen(section, index) {
+    if (this.state.openSections[section.id] !== undefined) {
+      return !!this.state.openSections[section.id];
+    }
+    // Auto-open first incomplete section; primary workout also defaults open if current.
+    const firstIncomplete = this.firstIncompleteSectionId();
+    if (section.id === firstIncomplete) return true;
+    if (section.primary && !this.state.workoutDoneToday) return true;
+    return index === 0;
+  }
 
-  document.getElementById('mobility-routines').innerHTML = (mobility.routines || [])
-    .map((r) => {
-      const note = r.note ? `<p class="note-line">${escapeHtml(r.note)}</p>` : '';
-      return `<article class="workout">
-  <header>
+  firstIncompleteSectionId() {
+    for (const section of this.routine.sections || []) {
+      const { done, total } = this.sectionProgress(section);
+      if (total === 0) continue;
+      if (done < total) return section.id;
+    }
+    return null;
+  }
+
+  renderNextUp() {
+    const el = document.getElementById('next-up');
+    const sections = this.routine.sections || [];
+    let next = null;
+    for (const section of sections) {
+      const { done, total } = this.sectionProgress(section);
+      if (total && done < total) {
+        next = section;
+        break;
+      }
+    }
+    if (!next) {
+      el.hidden = false;
+      el.className = 'next-up complete';
+      el.innerHTML = `
+        <div class="next-icon">${icon('check')}</div>
+        <div>
+          <p class="next-label">Status</p>
+          <p class="next-title">Day complete</p>
+          <p class="next-meta">All timeline sections checked off.</p>
+        </div>`;
+      return;
+    }
+    const { done, total } = this.sectionProgress(next);
+    const sub =
+      next.type === 'workout-slot' && this.displayWorkout
+        ? `Workout #${this.displayWorkout.id} · ${this.displayWorkout.goal}`
+        : `${done}/${total} done`;
+    el.hidden = false;
+    el.className = 'next-up';
+    el.innerHTML = `
+      <div class="next-icon">${icon(next.icon)}</div>
+      <div>
+        <p class="next-label">Up next</p>
+        <p class="next-title">${escapeHtml(next.title)}</p>
+        <p class="next-meta">${escapeHtml(sub)}</p>
+      </div>`;
+  }
+
+  renderTimeline() {
+    const root = document.getElementById('timeline');
+    root.innerHTML = (this.routine.sections || [])
+      .map((section, index) => this.renderSection(section, index))
+      .join('');
+  }
+
+  renderSection(section, index) {
+    const { done, total } = this.sectionProgress(section);
+    const allDone = total > 0 && done === total;
+    const open = this.isSectionOpen(section, index);
+    const count = total ? `${done}/${total}` : '';
+    const sub =
+      section.type === 'workout-slot' && this.displayWorkout
+        ? `#${this.displayWorkout.id} · ${this.displayWorkout.duration}`
+        : section.proteinTarget
+          ? `Protein · ${section.proteinTarget}`
+          : section.note || '';
+
+    let body = '';
+    if (section.reminder) {
+      body += `<div class="reminder">
+  <p class="reminder-label">${escapeHtml(section.reminder.label)}</p>
+  <ul class="reminder-items">${(section.reminder.items || [])
+    .map((i) => `<li>${escapeHtml(i)}</li>`)
+    .join('')}</ul>
+</div>`;
+    }
+    if (section.plate) {
+      body += `<div class="plate">${(section.plate.thirds || [])
+        .map(
+          (t) => `<div class="plate-third">
+  <h4>${escapeHtml(t.label)}</h4>
+  <ul>${(t.items || []).map((i) => `<li>${escapeHtml(i)}</li>`).join('')}</ul>
+</div>`
+        )
+        .join('')}</div>`;
+    }
+    if (section.note && section.proteinTarget) {
+      body += `<p class="sec-note">${escapeHtml(section.note)}</p>`;
+    }
+
+    if (section.type === 'workout-slot') {
+      body += this.renderWorkoutBody();
+    } else {
+      body += this.renderChecks(section.tasks || []);
+    }
+
+    const classes = [
+      'section',
+      open ? 'open' : '',
+      section.primary ? 'primary' : '',
+      allDone ? 'all-done' : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    return `<section class="${classes}" data-section="${escapeHtml(section.id)}">
+  <button type="button" class="section-head" data-toggle="${escapeHtml(section.id)}" aria-expanded="${open}">
+    <span class="sec-icon">${icon(section.icon)}</span>
+    <span class="sec-titles">
+      <h3>${escapeHtml(section.title)}</h3>
+      ${sub ? `<p class="sec-sub">${escapeHtml(sub)}</p>` : ''}
+    </span>
+    <span class="sec-count">${escapeHtml(count)}</span>
+    <span class="chev">${icon('chev')}</span>
+  </button>
+  <div class="section-body">${body}</div>
+</section>`;
+  }
+
+  renderChecks(tasks) {
+    if (!tasks.length) return '';
+    return `<ul class="checks">${tasks
+      .map((t) => {
+        const done = !!this.state.checks[t.id];
+        return `<li class="check${done ? ' done' : ''}" data-check="${escapeHtml(t.id)}" role="checkbox" aria-checked="${done}" tabindex="0">
+  <span class="box">${icon('check')}</span>
+  <span class="check-text">${escapeHtml(t.text)}</span>
+</li>`;
+      })
+      .join('')}</ul>`;
+  }
+
+  renderWorkoutBody() {
+    const w = this.displayWorkout;
+    if (!w) return '<p class="sec-note">No workouts configured.</p>';
+    const doneToday = this.state.workoutDoneToday;
+    const mobility = (w.mobility || []).length
+      ? `<ul class="mobility-list">${w.mobility.map((m) => `<li>${escapeHtml(m)}</li>`).join('')}</ul>`
+      : '';
+    const rows = (w.exercises || [])
+      .map((e, i) => {
+        const id = `ex-${w.id}-${i}`;
+        const checked = !!this.state.checks[id] || doneToday;
+        return `<tr>
+  <td>
+    <label class="check${checked ? ' done' : ''}" data-check="${escapeHtml(id)}" style="padding:0;border:0;background:transparent">
+      <span class="box">${icon('check')}</span>
+      <span class="check-text">${escapeHtml(e.name)}</span>
+    </label>
+  </td>
+  <td>${escapeHtml(e.sets)}</td>
+  <td>${escapeHtml(e.reps)}</td>
+</tr>`;
+      })
+      .join('');
+
+    const next = this.currentWorkout;
+    const doneLabel = doneToday && next
+      ? `Done · Next up: #${next.id} ${next.goal}`
+      : 'Mark workout complete';
+
+    return `<div class="wo-card">
+  <div class="wo-header">
+    <span class="wo-num">${escapeHtml(w.id)}</span>
     <div>
-      <h3>${escapeHtml(r.name)}</h3>
-      <p class="day-type">${escapeHtml(r.purpose || '')}</p>
-      <ul class="meta"><li>${escapeHtml(r.duration)}</li></ul>
+      <h4>${escapeHtml(w.goal)}</h4>
+      <p class="wo-type">${escapeHtml(w.dayType || '')}</p>
     </div>
-  </header>
-  ${note}
-  ${listHtml(r.items, 'ex')}
-</article>`;
-    })
-    .join('');
+  </div>
+  <ul class="wo-meta">
+    <li>${escapeHtml(w.duration)}</li>
+    <li>${escapeHtml(w.cardio)}</li>
+    <li>${escapeHtml(w.setsSummary || '')}</li>
+  </ul>
+  ${mobility}
+  <table class="ex-table">
+    <thead><tr><th>Exercise</th><th>Sets</th><th>Reps</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>
+  <div class="wo-actions">
+    <button type="button" class="btn btn-primary${doneToday ? ' done-state' : ''}" data-action="complete-workout" ${doneToday ? 'disabled' : ''}>
+      ${escapeHtml(doneLabel)}
+    </button>
+    <button type="button" class="btn btn-ghost" data-action="undo-workout">
+      Undo
+    </button>
+  </div>
+</div>`;
+  }
+
+  renderCycle() {
+    const cur = this.currentWorkout;
+    const next = this.nextWorkout;
+    const row = document.getElementById('cycle-row');
+    if (!cur) {
+      row.innerHTML = '';
+      return;
+    }
+    row.innerHTML = `
+      <article class="cycle-card current">
+        <p class="tag">Current Workout</p>
+        <h3>Workout #${escapeHtml(cur.id)}</h3>
+        <p>${escapeHtml(cur.goal)}</p>
+      </article>
+      <article class="cycle-card">
+        <p class="tag">Next</p>
+        <h3>Workout #${escapeHtml(next.id)}</h3>
+        <p>${escapeHtml(next.goal)}</p>
+      </article>`;
+  }
+
+  renderLongRun() {
+    const lr = this.milestones.longRun || {};
+    const cards = [lr.currentEasy, lr.currentLong, lr.nextIncrease].filter(Boolean);
+    document.getElementById('run-grid').innerHTML = cards
+      .map(
+        (c) => `<article class="run-card">
+  <p class="tag">${escapeHtml(c.label)}</p>
+  <p class="val">${escapeHtml(c.value)}</p>
+</article>`
+      )
+      .join('');
+  }
+
+  renderReview() {
+    const fields = this.milestones.weeklyReview?.fields || [];
+    document.getElementById('review-grid').innerHTML = fields
+      .map((f) => {
+        const val = this.state.review[f.id] || '';
+        return `<div class="review-field">
+  <label for="review-${escapeHtml(f.id)}">${escapeHtml(f.label)}</label>
+  <input id="review-${escapeHtml(f.id)}" data-review="${escapeHtml(f.id)}" type="text" inputmode="decimal" placeholder="${escapeHtml(f.placeholder || '')}" value="${escapeHtml(val)}" />
+</div>`;
+      })
+      .join('');
+  }
+
+  findTask(taskId) {
+    for (const section of this.routine.sections || []) {
+      for (const t of section.tasks || []) {
+        if (t.id === taskId) return t;
+      }
+    }
+    return null;
+  }
+
+  adjustTarget(id, dir) {
+    const item = (this.targets.items || []).find((t) => t.id === id);
+    if (!item) return;
+    const step = item.step || 1;
+    let val = Number(this.state.progress[id]) || 0;
+    val = Math.max(0, val + dir * step);
+    const decimals = item.decimals ?? (Number.isInteger(item.step) ? 0 : 2);
+    if (decimals > 0) val = Math.round(val * 100) / 100;
+    else val = Math.round(val);
+    this.state.progress[id] = val;
+    this.persist();
+    this.renderProgress();
+  }
+
+  toggleCheck(taskId) {
+    const was = !!this.state.checks[taskId];
+    this.state.checks[taskId] = !was;
+    const task = this.findTask(taskId);
+    if (task?.target && task.amount != null) {
+      const item = (this.targets.items || []).find((t) => t.id === task.target);
+      if (item) {
+        let val = Number(this.state.progress[task.target]) || 0;
+        const delta = was ? -task.amount : task.amount;
+        val = Math.max(0, val + delta);
+        const decimals = item.decimals ?? (Number.isInteger(item.step) ? 0 : 2);
+        if (decimals > 0) val = Math.round(val * 100) / 100;
+        this.state.progress[task.target] = val;
+      }
+    }
+    this.persist();
+    this.renderProgress();
+    this.renderTimeline();
+    this.renderNextUp();
+    this.renderCycle();
+  }
+
+  completeWorkout() {
+    if (this.state.workoutDoneToday) return;
+    const len = (this.workouts.items || []).length;
+    if (!len) return;
+    const w = this.currentWorkout;
+    if (w) {
+      (w.exercises || []).forEach((_, i) => {
+        this.state.checks[`ex-${w.id}-${i}`] = true;
+      });
+    }
+    this.state.completedWorkoutIndex = this.state.workoutIndex;
+    this.state.workoutIndex = (this.state.workoutIndex + 1) % len;
+    this.state.workoutDoneToday = true;
+    this.persist();
+    this.render();
+  }
+
+  undoWorkout() {
+    const len = (this.workouts.items || []).length;
+    if (!len) return;
+    if (this.state.workoutDoneToday) {
+      const completedIdx =
+        this.state.completedWorkoutIndex != null
+          ? this.state.completedWorkoutIndex
+          : (this.state.workoutIndex - 1 + len) % len;
+      const w = this.workoutAt(completedIdx);
+      if (w) {
+        (w.exercises || []).forEach((_, i) => {
+          delete this.state.checks[`ex-${w.id}-${i}`];
+        });
+      }
+      this.state.workoutIndex = completedIdx;
+      this.state.workoutDoneToday = false;
+      this.state.completedWorkoutIndex = null;
+    } else {
+      // Step cycle back one (manual correction)
+      this.state.workoutIndex = (this.state.workoutIndex - 1 + len) % len;
+    }
+    this.persist();
+    this.render();
+  }
+
+  resetDay() {
+    if (!confirm('Clear today\'s checkboxes and progress? Workout cycle position is kept.')) return;
+    const keepIndex = this.state.workoutIndex;
+    const keepReview = this.state.review;
+    this.state = defaultState(this.targets);
+    this.state.workoutIndex = keepIndex;
+    this.state.review = keepReview;
+    this.persist();
+    this.render();
+  }
+
+  toggleSection(id) {
+    const currently = this.isSectionOpen(
+      (this.routine.sections || []).find((s) => s.id === id) || { id },
+      0
+    );
+    this.state.openSections[id] = !currently;
+    this.persist();
+    const el = document.querySelector(`[data-section="${CSS.escape(id)}"]`);
+    if (!el) return;
+    el.classList.toggle('open', !currently);
+    const btn = el.querySelector('[data-toggle]');
+    if (btn) btn.setAttribute('aria-expanded', String(!currently));
+  }
+
+  bindOnce() {
+    if (this._bound) return;
+    this._bound = true;
+    const root = document.querySelector('.wrap');
+
+    root.addEventListener('click', (e) => {
+      const toggle = e.target.closest('[data-toggle]');
+      if (toggle) {
+        this.toggleSection(toggle.getAttribute('data-toggle'));
+        return;
+      }
+      const check = e.target.closest('[data-check]');
+      if (check) {
+        this.toggleCheck(check.getAttribute('data-check'));
+        return;
+      }
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      if (action === 'inc') this.adjustTarget(btn.getAttribute('data-id'), 1);
+      else if (action === 'dec') this.adjustTarget(btn.getAttribute('data-id'), -1);
+      else if (action === 'complete-workout') this.completeWorkout();
+      else if (action === 'undo-workout') this.undoWorkout();
+    });
+
+    root.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const check = e.target.closest('[data-check]');
+      if (!check) return;
+      e.preventDefault();
+      this.toggleCheck(check.getAttribute('data-check'));
+    });
+
+    root.addEventListener('input', (e) => {
+      const input = e.target.closest('[data-review]');
+      if (!input) return;
+      this.state.review[input.getAttribute('data-review')] = input.value;
+      this.persist();
+    });
+
+    document.getElementById('reset-day').addEventListener('click', () => this.resetDay());
+  }
 }
 
-loadPlan();
+boot();

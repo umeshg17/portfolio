@@ -1,0 +1,156 @@
+{
+  "title": "Workout Cycle",
+  "note": "Continuous cycle — not tied to weekdays. Mark complete to advance.",
+  "items": [
+    {
+      "id": 1,
+      "goal": "Upper Push + Core",
+      "dayType": "Strength Day",
+      "cardio": "10k steps",
+      "duration": "70 min",
+      "setsSummary": "11 exercises",
+      "mobility": [
+        "Dynamic Warm-up (5 min)",
+        "Post-workout Stretch (5 min)"
+      ],
+      "exercises": [
+        { "name": "Dead Hang", "sets": "3", "reps": "45s" },
+        { "name": "Scapular Pull-ups", "sets": "3", "reps": "10" },
+        { "name": "Push-ups", "sets": "4", "reps": "10–20" },
+        { "name": "Feet Elevated Push-ups", "sets": "3", "reps": "8–12" },
+        { "name": "Chair Dips", "sets": "3", "reps": "12" },
+        { "name": "DB Shoulder Press", "sets": "4", "reps": "10–12" },
+        { "name": "DB Lateral Raise", "sets": "4", "reps": "15" },
+        { "name": "Pike Push-ups", "sets": "3", "reps": "10" },
+        { "name": "DB Overhead Triceps Extension", "sets": "3", "reps": "12" },
+        { "name": "Hanging Knee Raise", "sets": "3", "reps": "10" },
+        { "name": "Plank", "sets": "3", "reps": "60s" }
+      ]
+    },
+    {
+      "id": 2,
+      "goal": "Easy Run",
+      "dayType": "Run Day",
+      "cardio": "Run",
+      "duration": "45–60 min",
+      "setsSummary": "Zone-2 + mobility",
+      "mobility": [
+        "Dynamic Warm-up (5 min)",
+        "Post-run Stretch (5–10 min)"
+      ],
+      "exercises": [
+        { "name": "Zone-2 Run", "sets": "1", "reps": "5–7 km" },
+        { "name": "Hip Flexor Stretch", "sets": "—", "reps": "hold" },
+        { "name": "Hamstring Stretch", "sets": "—", "reps": "hold" },
+        { "name": "Calf Stretch", "sets": "—", "reps": "hold" },
+        { "name": "Shoulder Mobility", "sets": "—", "reps": "—" },
+        { "name": "Thoracic Rotation", "sets": "—", "reps": "—" },
+        { "name": "Dead Hang", "sets": "2", "reps": "45s" }
+      ]
+    },
+    {
+      "id": 3,
+      "goal": "Legs + Core",
+      "dayType": "Strength Day",
+      "cardio": "10k steps",
+      "duration": "70 min",
+      "setsSummary": "8 exercises",
+      "mobility": [
+        "Dynamic Warm-up (5 min)",
+        "Post-workout Stretch (5 min)"
+      ],
+      "exercises": [
+        { "name": "Goblet Squat", "sets": "4", "reps": "15" },
+        { "name": "Bulgarian Split Squat", "sets": "3", "reps": "10/leg" },
+        { "name": "Romanian Deadlift", "sets": "4", "reps": "12" },
+        { "name": "Walking Lunges", "sets": "3", "reps": "20" },
+        { "name": "Single-leg Glute Bridge", "sets": "3", "reps": "15" },
+        { "name": "Standing Calf Raise", "sets": "4", "reps": "20" },
+        { "name": "Hollow Hold", "sets": "3", "reps": "30s" },
+        { "name": "Russian Twist", "sets": "3", "reps": "20" }
+      ]
+    },
+    {
+      "id": 4,
+      "goal": "Back + Arms",
+      "dayType": "Strength Day",
+      "cardio": "10k steps",
+      "duration": "70 min",
+      "setsSummary": "10 exercises",
+      "mobility": [
+        "Dynamic Warm-up (5 min)",
+        "Post-workout Stretch (5 min)"
+      ],
+      "exercises": [
+        { "name": "Negative Pull-ups", "sets": "5", "reps": "5" },
+        { "name": "Assisted Pull-ups", "sets": "3", "reps": "6" },
+        { "name": "One-arm DB Row", "sets": "4", "reps": "12" },
+        { "name": "Backpack Row", "sets": "4", "reps": "15" },
+        { "name": "Rear Delt Fly", "sets": "4", "reps": "15" },
+        { "name": "DB Curl", "sets": "4", "reps": "12" },
+        { "name": "Hammer Curl", "sets": "3", "reps": "12" },
+        { "name": "Reverse Curl", "sets": "3", "reps": "12" },
+        { "name": "Farmer Carry", "sets": "3", "reps": "45s" },
+        { "name": "Side Plank", "sets": "3", "reps": "45s" }
+      ]
+    },
+    {
+      "id": 5,
+      "goal": "Long Run",
+      "dayType": "Run Day",
+      "cardio": "Long Run",
+      "duration": "60–100 min",
+      "setsSummary": "Progressive distance",
+      "mobility": [
+        "Dynamic Warm-up (5 min)",
+        "Post-run Stretch (5–10 min)"
+      ],
+      "exercises": [
+        { "name": "Long Run", "sets": "1", "reps": "see Long Run Progress" },
+        { "name": "Cool-down Walk", "sets": "1", "reps": "10 min" },
+        { "name": "Stretching", "sets": "1", "reps": "10 min" }
+      ]
+    },
+    {
+      "id": 6,
+      "goal": "Athletic Strength",
+      "dayType": "Strength Day",
+      "cardio": "10k steps",
+      "duration": "75 min",
+      "setsSummary": "10 exercises",
+      "mobility": [
+        "Dynamic Warm-up (5 min)",
+        "Post-workout Stretch (5 min)"
+      ],
+      "exercises": [
+        { "name": "Push-ups", "sets": "3", "reps": "Max" },
+        { "name": "Pull-up Negatives", "sets": "3", "reps": "5" },
+        { "name": "Goblet Squat", "sets": "3", "reps": "15" },
+        { "name": "Romanian Deadlift", "sets": "3", "reps": "15" },
+        { "name": "DB Shoulder Press", "sets": "3", "reps": "12" },
+        { "name": "One-arm Row", "sets": "3", "reps": "12" },
+        { "name": "Mountain Climbers", "sets": "3", "reps": "20" },
+        { "name": "Burpees", "sets": "3", "reps": "10" },
+        { "name": "Jump Squats", "sets": "3", "reps": "15" },
+        { "name": "Plank", "sets": "2", "reps": "60s" }
+      ]
+    },
+    {
+      "id": 7,
+      "goal": "Recovery",
+      "dayType": "Recovery Day",
+      "cardio": "Easy",
+      "duration": "45–90 min",
+      "setsSummary": "Choose one activity",
+      "mobility": [
+        "Full Mobility Routine (15–20 min)"
+      ],
+      "exercises": [
+        { "name": "Easy Cycling", "sets": "OR", "reps": "45–60 min" },
+        { "name": "Easy Swimming", "sets": "OR", "reps": "800–1000 m" },
+        { "name": "Badminton", "sets": "OR", "reps": "60 min" },
+        { "name": "Brisk Walk", "sets": "OR", "reps": "45 min" }
+      ]
+    }
+  ]
+}
