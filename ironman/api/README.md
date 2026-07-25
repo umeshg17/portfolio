@@ -62,6 +62,26 @@ pulumi up
 pulumi stack output apiUrl
 ```
 
+## Cost guards (no added spend)
+
+Tunable in [`resources.yaml`](resources.yaml) under `lambda` / `costGuard`:
+
+| Guard | What it does |
+|-------|----------------|
+| `reservedConcurrentExecutions: 2` | Caps parallel Lambda runs so a flood cannot scale cost |
+| API Gateway `throttle` (5 rps / burst 10) | Rejects excess HTTP traffic before Lambda |
+| `logRetentionDays: 7` | Drops old CloudWatch logs (unlimited retention is the default and costs more over time) |
+| Optional AWS Budget | First **2 budgets/account are free** — uncomment `budgetUsd` + `budgetEmail` to email at 80%/100% of a monthly tag-filtered budget |
+
+Not included on purpose (they add cost): WAF, CloudWatch metric alarms, SNS topics.
+
+If `pulumi up` fails because `/aws/lambda/ironman-tracker-api` already exists (Lambda auto-created it earlier), import once then redeploy:
+
+```bash
+pulumi import aws:cloudwatch/logGroup:LogGroup ironman-lambda-logs /aws/lambda/ironman-tracker-api
+./deploy.sh
+```
+
 ## API
 
 - `GET /state?day=YYYY-MM-DD` — `Authorization: Bearer <pin>`

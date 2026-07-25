@@ -618,10 +618,6 @@ class Dashboard {
     document.getElementById('phase').textContent = meta.phase || '';
     document.getElementById('footer').textContent = meta.footer || '';
     document.getElementById('targets-title').textContent = this.targets.title || 'Protein';
-    document.getElementById('longrun-title').textContent =
-      this.milestones.longRun?.title || 'Long Run Progress';
-    document.getElementById('review-title').textContent =
-      this.milestones.weeklyReview?.title || 'Weekly Review';
   }
 
   renderProgress() {
@@ -1008,29 +1004,11 @@ class Dashboard {
   }
 
   renderLongRun() {
-    const lr = this.milestones.longRun || {};
-    const cards = [lr.currentEasy, lr.currentLong, lr.nextIncrease].filter(Boolean);
-    document.getElementById('run-grid').innerHTML = cards
-      .map(
-        (c) => `<article class="run-card">
-  <p class="tag">${escapeHtml(c.label)}</p>
-  <p class="val">${escapeHtml(c.value)}</p>
-</article>`
-      )
-      .join('');
+    /* Long run progress cards removed. */
   }
 
   renderReview() {
-    const fields = this.milestones.weeklyReview?.fields || [];
-    document.getElementById('review-grid').innerHTML = fields
-      .map((f) => {
-        const val = this.state.review[f.id] || '';
-        return `<div class="review-field">
-  <label for="review-${escapeHtml(f.id)}">${escapeHtml(f.label)}</label>
-  <input id="review-${escapeHtml(f.id)}" data-review="${escapeHtml(f.id)}" type="text" inputmode="decimal" placeholder="${escapeHtml(f.placeholder || '')}" value="${escapeHtml(val)}" />
-</div>`;
-      })
-      .join('');
+    /* Weekly review tracking removed — kept as no-op for older saved state. */
   }
 
   findTask(taskId) {

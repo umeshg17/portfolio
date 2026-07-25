@@ -27,6 +27,16 @@ interface ResourcesSpec {
     timeout: number;
     memorySize: number;
     codeDir: string;
+    reservedConcurrentExecutions?: number;
+    logRetentionDays?: number;
+  };
+  costGuard?: {
+    throttle?: {
+      rateLimit?: number;
+      burstLimit?: number;
+    };
+    budgetUsd?: number;
+    budgetEmail?: string;
   };
   httpApi: {
     name: string;
@@ -56,6 +66,12 @@ const spec = loadResources();
 const config = new pulumi.Config();
 const ironmanPin = config.requireSecret('ironmanPin');
 const tags = spec.tags || {};
+const costGuard = spec.costGuard || {};
+const throttle = costGuard.throttle || {};
+const reservedConcurrency = spec.lambda.reservedConcurrentExecutions ?? 2;
+const logRetentionDays = spec.lambda.logRetentionDays ?? 7;
+const throttleRate = throttle.rateLimit ?? 5;
+const throttleBurst = throttle.burstLimit ?? 10;
 
 const table = new aws.dynamodb.Table('ironman-tracker', {
   name: spec.dynamodb.name,
@@ -105,6 +121,13 @@ const ddbPolicy = new aws.iam.RolePolicy('ironman-lambda-ddb', {
   ),
 });
 
+// Create log group up front so retention applies (Lambda would otherwise create unlimited retention).
+const lambdaLogGroup = new aws.cloudwatch.LogGroup('ironman-lambda-logs', {
+  name: `/aws/lambda/${spec.lambda.name}`,
+  retentionInDays: logRetentionDays,
+  tags,
+});
+
 const allowedOrigins = (spec.httpApi.cors.allowOrigins || []).join(',');
 
 const lambdaFn = new aws.lambda.Function(
@@ -117,6 +140,7 @@ const lambdaFn = new aws.lambda.Function(
     handler: spec.lambda.handler,
     timeout: spec.lambda.timeout,
     memorySize: spec.lambda.memorySize,
+    reservedConcurrentExecutions: reservedConcurrency,
     code: new pulumi.asset.FileArchive(path.join(__dirname, spec.lambda.codeDir)),
     environment: {
       variables: {
@@ -127,7 +151,7 @@ const lambdaFn = new aws.lambda.Function(
     },
     tags,
   },
-  { dependsOn: [ddbPolicy] }
+  { dependsOn: [ddbPolicy, lambdaLogGroup] }
 );
 
 const httpApi = new aws.apigatewayv2.Api('ironman-http-api', {
@@ -163,6 +187,10 @@ new aws.apigatewayv2.Stage('ironman-default-stage', {
   apiId: httpApi.id,
   name: spec.httpApi.stageName,
   autoDeploy: spec.httpApi.autoDeploy !== false,
+  defaultRouteSettings: {
+    throttlingRateLimit: throttleRate,
+    throttlingBurstLimit: throttleBurst,
+  },
   tags,
 });
 
@@ -173,6 +201,47 @@ new aws.lambda.Permission('ironman-apigw-permission', {
   sourceArn: pulumi.interpolate`${httpApi.executionArn}/*/*`,
 });
 
+// First 2 AWS Budgets per account are free. Only create when email + amount are set.
+const budgetUsd = costGuard.budgetUsd;
+const budgetEmail = (costGuard.budgetEmail || '').trim();
+if (budgetUsd && budgetEmail) {
+  const accountId = aws.getCallerIdentityOutput().accountId;
+  new aws.budgets.Budget('ironman-monthly-budget', {
+    name: 'ironman-tracker-monthly',
+    budgetType: 'COST',
+    limitAmount: String(budgetUsd),
+    limitUnit: 'USD',
+    timeUnit: 'MONTHLY',
+    costFilters: [
+      {
+        name: 'TagKeyValue',
+        values: [`user:Project$ironman`],
+      },
+    ],
+    notifications: [
+      {
+        comparisonOperator: 'GREATER_THAN',
+        threshold: 80,
+        thresholdType: 'PERCENTAGE',
+        notificationType: 'ACTUAL',
+        subscriberEmailAddresses: [budgetEmail],
+      },
+      {
+        comparisonOperator: 'GREATER_THAN',
+        threshold: 100,
+        thresholdType: 'PERCENTAGE',
+        notificationType: 'ACTUAL',
+        subscriberEmailAddresses: [budgetEmail],
+      },
+    ],
+    accountId,
+  });
+}
+
 export const apiUrl = pulumi.interpolate`${httpApi.apiEndpoint}`;
 export const tableName = table.name;
 export const lambdaName = lambdaFn.name;
+export const reservedConcurrentExecutions = reservedConcurrency;
+export const apiThrottleRateLimit = throttleRate;
+export const apiThrottleBurstLimit = throttleBurst;
+export const lambdaLogRetentionDays = logRetentionDays;

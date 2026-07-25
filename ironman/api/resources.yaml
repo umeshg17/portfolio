@@ -30,6 +30,17 @@ lambda:
   timeout: 10                     # Max seconds per invoke (API should finish well under this)
   memorySize: 128                 # MB; raise if cold starts or DynamoDB work needs more CPU
   codeDir: dist                   # Folder zipped for deploy (from `npm run build:lambda`)
+  reservedConcurrentExecutions: 2 # Cap parallel invokes (no extra $; blocks traffic spikes)
+  logRetentionDays: 7             # CloudWatch log retention (free setting; lowers log storage $)
+
+# Free cost / abuse guards (no WAF, no paid alarms)
+costGuard:
+  throttle:
+    rateLimit: 5                  # API Gateway sustained req/s for default stage
+    burstLimit: 10                # API Gateway burst ceiling
+  # Optional: first 2 AWS Budgets per account are free. Uncomment both to enable.
+  # budgetUsd: 5
+  # budgetEmail: you@example.com
 
 # Public HTTPS front door for the Lambda (API Gateway HTTP API)
 httpApi:

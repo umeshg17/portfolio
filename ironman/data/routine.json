@@ -18,7 +18,6 @@
       "id": "breakfast",
       "title": "Breakfast",
       "icon": "breakfast",
-      "proteinTarget": "25–30 g",
       "note": "Mark what you eat in Protein log above",
       "suggestions": [
         "2 boiled eggs (~12 g)",
@@ -46,7 +45,6 @@
       "id": "lunch",
       "title": "Lunch",
       "icon": "lunch",
-      "proteinTarget": "35–40 g",
       "note": "Mark protein foods in Protein log above",
       "plate": {
         "thirds": [
@@ -129,7 +127,6 @@
       "id": "dinner",
       "title": "Dinner",
       "icon": "dinner",
-      "proteinTarget": "~30 g",
       "note": "Mark protein in Protein log above",
       "suggestions": [
         "Paneer / high-protein portion (~30 g)",
