@@ -16,7 +16,7 @@
 
 \begin{rSection}{Professional Summary}
 
-{M.Tech CSA (IISc) engineer focused on reliable platform delivery at scale: multi-region EKS, Kubernetes operations, GitOps, and CI/CD (Jenkins, Argo CD). Emphasis on cost-aware design, observability, and automation with clear ownership. Seeking infrastructure, platform, or cloud engineering roles (IC).}
+{Platform Engineer with 4+ years of infrastructure experience operating production AWS and Kubernetes systems. Hands-on across EKS capacity engineering, Linux and container-runtime debugging, networking and IAM troubleshooting, deployment automation, and observability. I turn production incidents and engineering bottlenecks into safer, repeatable platform capabilities.}
 
 \end{rSection}
 %----------------------------------------------------------------------------------------
@@ -30,18 +30,18 @@
 %----------------------------------------------------------------------------------------
 \begin{rSection}{SKILLS}
 
+\footnotesize
 \begin{tabular}{ @{} >{\bfseries}l @{\hspace{6ex}} l }
-Programming & Python, Bash; C (coursework) \\
-Containers & Docker; Kubernetes (CKA); Helm; Karpenter (node/workload scaling) \\
-Cloud & AWS (EKS, EC2, ALB/S3/IAM for workloads); GCP exposure (GKE, Dataproc) \\
-IaC & Pulumi (primary at prior role), Terraform (modules / add-ons) \\
-CI/CD & Jenkins, Bitbucket Pipelines, Argo CD; PR-reviewed Git workflows for infrastructure \\
-Security & Kubernetes RBAC, workload identity patterns, image scanning in pipelines \\
-Automation & REST/CLI tooling, Liquibase in pipelines, Slack-based deploy helpers \\
-Observability & Metrics, logs, alerting; New Relic (NRQL); cost visibility (e.g., Kubecost) \\
-Data (prior role) & Kafka, Spark \\
-Learning & OpenShift (exploring)
+Languages & Python, Bash, C \\
+Kubernetes & Kubernetes (CKA), EKS, Helm, Karpenter NodePools, containerd, kubelet, CNI \\
+AWS & EKS, EC2, ECR, EBS, S3, SQS, IAM/STS, IRSA, ALB \\
+Networking & DNS/SRV, CoreDNS, VPC peering, NACLs, security groups, ALB/ELB, gRPC \\
+CI/CD & Jenkins, JCasC, Job DSL, Buildx, Argo CD \\
+IaC & Terraform, Pulumi \\
+Security & Kubernetes RBAC, workload identity, image scanning, policy checks \\
+Observability & Prometheus, VictoriaMetrics/vmalert, New Relic/NRQL, logs, alerting, Kubecost
 \end{tabular}
+\normalsize
 
 \end{rSection}
 
@@ -52,12 +52,14 @@ Observe.AI \hfill \textit{Bengaluru, Karnataka, IN}
 
 \begin{itemize}
     \itemsep -3pt {} 
-    \item Managed 15+ multi-region EKS production clusters with 100+ microservices --- node pool isolation, Karpenter autoscaling, PDBs, and resource right-sizing.
-    \item Delivered 175+ production infrastructure changes with zero downtime through a structured change-management process.
-    \item Owned Jenkins CI/CD on Kubernetes --- multi-EKS agents, ALB ingress, Okta SSO, observability integrations, and pipeline tuning for faster builds.
-    \item Built a Jira-gated Terraform plan/apply pipeline with AI-powered risk review, S3 plan storage, Slack notifications, and auto-cancellation --- changes applied only after approval reaches the deployment window.
-    \item Built an MCP-based AI DevOps assistant integrating LLMs with AWS cloud tooling and documentation --- Slack interface with LangGraph agents and MCP for natural-language lookups and infrastructure guidance across accounts during incidents.
-    \item Designed an approval-based Snowflake change workflow with Liquibase --- PR validation, CODEOWNERS, CI/CD integration, and auditable schema changes.
+    \item Investigated a production Realtime Service outage by correlating ELB 5xx responses with pod termination during Karpenter consolidation, identifying a node-lifecycle failure mode behind 1m38s of downtime.
+    \item Engineered EKS node provisioning with Karpenter NodePools for Intel and Graviton workloads, using instance-family, CPU-capacity, and consolidation constraints to control placement and scaling.
+    \item Reduced Bottlerocket EKS node and workload readiness time from approximately 10 minutes to 120 seconds (80\%) through an EBS snapshot-based container-image preload workflow.
+    \item Debugged MongoDB connectivity from Kubernetes over VPC peering by tracing DNS SRV/A resolution and private network paths from in-cluster diagnostic pods; tightened NACL and security-group controls for database and ephemeral-port traffic.
+    \item Resolved KEDA AWS authentication failures by tracing STS \texttt{AssumeRole} denials to IAM permissions required for SQS queue-attribute retrieval.
+    \item Migrated Kubernetes workloads toward AWS Graviton by validating ARM64-compatible base images and building multi-architecture Docker images, delivering 20--25\% infrastructure cost savings.
+    \item Built EKS-based Jenkins CI infrastructure with Helm, JCasC, and Kubernetes agents; integrated Buildx and ECR for multi-architecture builds and cross-account image access.
+    \item Automated Terraform change delivery through a Jira-state-driven Jenkins workflow that publishes plans and Gemini reviews, enforcing approval gates before infrastructure changes are applied.
 \end{itemize}
 
 
@@ -67,12 +69,12 @@ Amagi Media Labs \hfill \textit{Bengaluru, Karnataka, IN}
 
 \begin{itemize}
     \itemsep -3pt {} 
-    \item Shipped GitOps improvements with Argo CD --- image scanning and policy checks before promotion to target environments.
-    \item Ran staged Kubernetes upgrades and add-on rollouts with health checks and documented rollback paths.
-    \item Rolled out AWS Load Balancer Controller and ingress for predictable routing to internal services.
-    \item Built Slack-backed tooling for guarded, on-demand deploys with a lightweight audit trail (who/when/what).
-    \item Partnered with SRE to add dashboards and alerts for PRs, releases, and cloud spend alongside on-call practices.
-    \item Shipped infrastructure changes using the platform team's standardized Pulumi stacks.
+    \item Strengthened GitOps delivery with Argo CD, image scanning, and policy checks before promotion across environments.
+    \item Executed staged Kubernetes upgrades and add-on rollouts with health validation and documented rollback procedures to reduce deployment risk.
+    \item Rolled out AWS Load Balancer Controller and ingress, improving predictable routing to internal services.
+    \item Built Slack-backed tooling for guarded, on-demand deployments with a lightweight audit trail (who, when, what).
+    \item Partnered with SRE on dashboards and alerts for pull requests, releases, cloud spend, and on-call operations.
+    \item Delivered infrastructure changes through the platform team's standardized Pulumi stacks.
 \end{itemize}
 
 \textbf{Teaching Assistant} \hfill Aug 2022 -- Apr 2023\\
@@ -164,4 +166,3 @@ Exadatum \hfill \textit{Pune, Maharashtra, IN}
 \end{rSection}
 
 \end{document}
-
