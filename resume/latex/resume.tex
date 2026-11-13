@@ -1,166 +1,118 @@
 \documentclass{resume} % Use the custom resume.cls style
 
-\usepackage[left=0.4 in,top=0.4in,right=0.4 in,bottom=0.4in]{geometry} % Document margins
-\newcommand{\tab}[1]{\hspace{.2667\textwidth}\rlap{#1}} 
-\newcommand{\itab}[1]{\hspace{0em}\rlap{#1}}
-\name{Umesh Gaikwad} % Your name
-% You can merge both of these into a single line, if you do not have a website.
-\address{+91 9766185211 \\ Bengaluru, Karnataka, IN}
-\address{\href{mailto:gaikwadumesh123@gmail.com}{gaikwadumesh123@gmail.com} \\ \href{https://www.linkedin.com/in/umeshg17/}{linkedin.com/in/umeshg17} \\ \href{https://umesh.skalekontrol.com}{umesh.skalekontrol.com}}
+\usepackage[a4paper,left=0.55in,top=0.36in,right=0.55in,bottom=0.32in]{geometry}
+\usepackage{tgtermes}
+\usepackage{microtype}
+\usepackage{enumitem}
+\setlength{\emergencystretch}{3em}
+\hyphenation{Karpenter Bottlerocket VictoriaMetrics Graviton Kubernetes observability endpoint Distributed infrastructure}
+\setlist[itemize]{leftmargin=1.1em,itemsep=0pt,topsep=1pt,parsep=0pt,partopsep=0pt}
+\def\sectionskip{\vspace{0.42em}}
+\def\sectionlineskip{\vspace{0.12em}}
+\def\nameskip{\vspace{0.05em}}
+\def\addressskip{\vspace{0pt}}
+\linespread{0.955}
+\def\printaddress#1{%
+  \begingroup
+    \centering #1\par
+  \endgroup
+  \addressskip
+}
+\newcommand{\sep}{\hspace{0.35em}\textperiodcentered\hspace{0.35em}}
+\newcommand{\pipe}{\hspace{0.35em}\textbar\hspace{0.35em}}
+\name{Umesh Gaikwad}
+% resume.cls prints the third \address first, then the first, then the second.
+\address{\fontsize{8.7}{10.5}\selectfont\bfseries INFRASTRUCTURE SOFTWARE ENGINEER \textbar\ CLOUD PLATFORMS \& AI-ASSISTED OPERATIONS}
+\address{\small Bengaluru, India\sep +91 9766185211\sep \href{mailto:gaikwadumesh123@gmail.com}{gaikwadumesh123@gmail.com}\sep \href{https://www.linkedin.com/in/umeshg17/}{LinkedIn}}
+
+\renewenvironment{rSection}[1]{%
+  \sectionskip
+  \MakeUppercase{\textbf{#1}}%
+  \sectionlineskip
+  \hrule
+  \begin{list}{}{%
+    \setlength{\leftmargin}{0em}%
+    \setlength{\topsep}{0.22em}%
+    \setlength{\partopsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\itemsep}{0pt}%
+  }%
+  \item[]%
+}{%
+  \end{list}%
+}
+
+\newcommand{\skill}[2]{\textbf{#1:} #2\par\vspace{0.08em}}
+\newcommand{\role}[2]{\textbf{#1}\pipe #2\par\vspace{0.02em}}
 
 \begin{document}
 
-%----------------------------------------------------------------------------------------
-%	PROFESSIONAL SUMMARY
-%----------------------------------------------------------------------------------------
-
 \begin{rSection}{Professional Summary}
 
-{Platform Engineer with 4+ years of infrastructure experience operating production AWS and Kubernetes systems. Hands-on across EKS capacity engineering, Linux and container-runtime debugging, networking and IAM troubleshooting, deployment automation, and observability. I turn production incidents and engineering bottlenecks into safer, repeatable platform capabilities.}
-
-\end{rSection}
-%----------------------------------------------------------------------------------------
-%	EDUCATION SECTION
-%----------------------------------------------------------------------------------------
-
-
-
-%----------------------------------------------------------------------------------------
-% TECHNICAL STRENGTHS
-%----------------------------------------------------------------------------------------
-\begin{rSection}{SKILLS}
-
-\footnotesize
-\begin{tabular}{ @{} >{\bfseries}l @{\hspace{6ex}} l }
-Languages & Python, Bash, C \\
-Kubernetes & Kubernetes (CKA), EKS, Helm, Karpenter NodePools, containerd, kubelet, CNI \\
-AWS & EKS, EC2, ECR, EBS, S3, SQS, IAM/STS, IRSA, ALB \\
-Networking & DNS/SRV, CoreDNS, VPC peering, NACLs, security groups, ALB/ELB, gRPC \\
-CI/CD & Jenkins, JCasC, Job DSL, Buildx, Argo CD \\
-IaC & Terraform, Pulumi \\
-Security & Kubernetes RBAC, workload identity, image scanning, policy checks \\
-Observability & Prometheus, VictoriaMetrics/vmalert, New Relic/NRQL, logs, alerting, Kubecost
-\end{tabular}
-\normalsize
+Infrastructure and platform engineer with 4+ years of experience building automation and operating cloud-native systems across AWS and GCP. Built an internal Python/FastAPI-based AWS asset discovery tool using LangGraph, LiteLLM and MCP, integrated with AWS Cloud Control API. Experience spans Kubernetes/EKS, infrastructure automation, CI/CD, production troubleshooting, cloud networking and observability. M.Tech in Computer Science from IISc Bengaluru.
 
 \end{rSection}
 
-\begin{rSection}{EXPERIENCE}
+\begin{rSection}{Technical Skills}
 
-\textbf{DevOps / Platform Engineer} \hfill Sep 2024 -- Present\\
-Observe.AI \hfill \textit{Bengaluru, Karnataka, IN}
-
-\begin{itemize}
-    \itemsep -3pt {} 
-    \item Investigated a production Realtime Service outage by correlating ELB 5xx responses with pod termination during Karpenter consolidation, identifying a node-lifecycle failure mode behind 1m38s of downtime.
-    \item Engineered EKS node provisioning with Karpenter NodePools for Intel and Graviton workloads, using instance-family, CPU-capacity, and consolidation constraints to control placement and scaling.
-    \item Reduced Bottlerocket EKS node and workload readiness time from approximately 10 minutes to 120 seconds (80\%) through an EBS snapshot-based container-image preload workflow.
-    \item Debugged MongoDB connectivity from Kubernetes over VPC peering by tracing DNS SRV/A resolution and private network paths from in-cluster diagnostic pods; tightened NACL and security-group controls for database and ephemeral-port traffic.
-    \item Resolved KEDA AWS authentication failures by tracing STS \texttt{AssumeRole} denials to IAM permissions required for SQS queue-attribute retrieval.
-    \item Migrated Kubernetes workloads toward AWS Graviton by validating ARM64-compatible base images and building multi-architecture Docker images, delivering 20--25\% infrastructure cost savings.
-    \item Built EKS-based Jenkins CI infrastructure with Helm, JCasC, and Kubernetes agents; integrated Buildx and ECR for multi-architecture builds and cross-account image access.
-    \item Automated Terraform change delivery through a Jira-state-driven Jenkins workflow that publishes plans and Gemini reviews, enforcing approval gates before infrastructure changes are applied.
-\end{itemize}
-
-
- 
-\textbf{DevOps Engineer} \hfill Aug 2023 -- Sep 2024\\
-Amagi Media Labs \hfill \textit{Bengaluru, Karnataka, IN}
-
-\begin{itemize}
-    \itemsep -3pt {} 
-    \item Strengthened GitOps delivery with Argo CD, image scanning, and policy checks before promotion across environments.
-    \item Executed staged Kubernetes upgrades and add-on rollouts with health validation and documented rollback procedures to reduce deployment risk.
-    \item Rolled out AWS Load Balancer Controller and ingress, improving predictable routing to internal services.
-    \item Built Slack-backed tooling for guarded, on-demand deployments with a lightweight audit trail (who, when, what).
-    \item Partnered with SRE on dashboards and alerts for pull requests, releases, cloud spend, and on-call operations.
-    \item Delivered infrastructure changes through the platform team's standardized Pulumi stacks.
-\end{itemize}
-
-\textbf{Teaching Assistant} \hfill Aug 2022 -- Apr 2023\\
-Indian Institute of Science \hfill \textit{Bengaluru}
-
-\begin{itemize}
-    \itemsep -3pt {}
-    \item E0 225 (\textit{Design \& Analysis of Algorithms}): tutorials and evaluation; cohort of 80+ students.
-    \item E0 208 (\textit{Computational Geometry}): evaluation and invigilation; cohort of 60+ students.
-\end{itemize}
-
-
-\textbf{Big Data Engineer} \hfill July 2019 -- Apr 2020\\
-Exadatum \hfill \textit{Pune, Maharashtra, IN}
-
-\begin{itemize}
-    \itemsep -3pt {}
-    \item Built a Docker-based Spark + Livy setup for notebook-driven jobs so the team could iterate before paying for Dataproc clusters.
-    \item Consolidated related Java modules and added JUnit coverage around Kafka $\rightarrow$ GCS ingestion paths.
-    \item Delivered POCs across Dataproc/Livy REST, GKE deploy scripts (logs to GCS), and multi-user JupyterHub (details on request).
-\end{itemize}
-
-
-\end{rSection} 
-
-%----------------------------------------------------------------------------------------
-\begin{rSection}{Selected public work}
-
-\begin{itemize}
-    \itemsep -3pt {}
-    \item \textbf{jenkins-k8s-agent-helm} --- Jenkins inbound agents on Kubernetes (WebSocket, IRSA, optional Karpenter). \href{https://github.com/SkaleKontrol/jenkins-k8s-agent-helm}{github.com/SkaleKontrol/jenkins-k8s-agent-helm}
-    \item \textbf{ECR + Bottlerocket EBS snapshot} --- encrypted volume snapshot with image pre-pull for faster EKS node bring-up. \href{https://github.com/SkaleKontrol/ecr-bottlerocket-ebs-snapshot}{github.com/SkaleKontrol/ecr-bottlerocket-ebs-snapshot}
-    \item \textbf{klabctl} --- kubeadm-based multi-node Kubernetes lab on Multipass. \href{https://github.com/SkaleKontrol/klabctl}{github.com/SkaleKontrol/klabctl}
-\end{itemize}
+\skill{Programming \& APIs}{Python, Bash, SQL; Java (JUnit test development); FastAPI, REST APIs}
+\skill{AI-assisted infrastructure tooling}{LangGraph, LiteLLM, MCP, AWS Cloud Control API, natural-language infrastructure discovery}
+\skill{Cloud \& infrastructure}{AWS, GCP, EKS, EC2, EBS, ECR, S3, SQS, IAM/STS, ALB/ELB, VPC}
+\skill{Kubernetes \& automation}{Kubernetes, Docker, Helm, Karpenter, Bottlerocket, Terraform, Pulumi}
+\skill{CI/CD \& GitOps}{Jenkins, JCasC, Job DSL, Docker Buildx, GitHub Actions, Bitbucket Pipelines, Argo CD}
+\skill{Distributed systems, observability \& networking}{Kafka, Prometheus, PromQL, VictoriaMetrics/vmalert, New Relic, DNS, TCP/IP, VPC peering, NACLs, security groups, TLS}
 
 \end{rSection}
 
-%----------------------------------------------------------------------------------------
-%	WORK EXPERIENCE SECTION
-%----------------------------------------------------------------------------------------
+\begin{rSection}{Professional Experience}
 
-% \begin{rSection}{PROJECTS}
-% \vspace{-1.25em}
-% \item \textbf{Hiring Search Tool.} {Built a tool to search for Hiring Managers and Recruiters by using ReactJS, NodeJS, Firebase and boolean queries. Over 25000 people have used it so far, with 5000+ queries being saved and shared, and search results even better than LinkedIn! \href{https://hiring-search.careerflow.ai/}{(Try it here)}}
-% \item \textbf{Short Project Title.} {Build a project that does something and had quantified success using A, B, and C. This project's description spans two lines and also won an award.}
-% \item \textbf{Short Project Title.} {Build a project that does something and had quantified success using A, B, and C. This project's description spans two lines and also won an award.}
-% \end{rSection} 
+\role{Platform Engineer-2}{Sep 2024 -- Present}
+\textit{Observe.AI\pipe Bengaluru, India}
 
-%----------------------------------------------------------------------------------------
-% \begin{rSection}{Extra-Curricular Activities} 
-% \begin{itemize}
-%     \item	Sample extracurricular bullet (edit or delete this section). 
-%     \item	Sample bullet point.
-% \end{itemize}
-
-
-% \end{rSection}
-
-%----------------------------------------------------------------------------------------
-\begin{rSection}{Certifications \& Achievements} 
 \begin{itemize}
-    \item \textbf{GATE 2021}: Top 2\% among $\sim$200k candidates (GATE CS paper); admitted to IISc Bangalore (M.Tech CSA).
-    \item \href{https://www.credly.com/badges/75d9811c-198b-4dc5-a41d-dd3a6e6d9ee3/public_url}{Google IT Automation with Python – Coursera Professional Certificate}
-    \item \href{https://www.credly.com/badges/5e298069-3cc7-4a4b-b30c-79a8ae8f624f/public_url}{Certified Kubernetes Administrator (CKA)}
-    \item Jenkins CI/CD Bootcamp -- Udemy (Jun 2025)
-    \item Liquibase and the CI/CD Process -- Liquibase (Oct 2024)
+    \item Built an internal natural-language AWS asset discovery service using Python, FastAPI, LangGraph, LiteLLM and MCP; integrated AWS Cloud Control API to retrieve resource information across AWS accounts.
+    \item Managed day-to-day operations of 15+ Kubernetes clusters, ensuring timely version upgrades and continuously tuning cluster configurations, node capacity and workloads for reliability, performance and cost efficiency.
+    \item Optimized EKS Bottlerocket image preloading with EBS snapshot-based workflows, reducing workload readiness from approximately 10 minutes to 120 seconds ($\sim$80\%) and saving \$1,200 per day ($\sim$\$438K annualized).
+    \item Migrated MongoDB connectivity from private endpoints to AWS VPC peering, reducing connectivity costs by 97\% and saving \$222 per day ($\sim$\$81K annualized).
+    \item Worked on Jenkins CI/CD infrastructure on EKS using Helm, JCasC, Job DSL, Docker Buildx, ECR and Kubernetes build agents.
+    \item Contributed to a Terraform change workflow using Jenkins and Jira to publish plan/review output and gate infrastructure apply operations on approval.
+    \item Right-sized Kubernetes workloads and optimized EKS compute costs by migrating suitable workloads to AWS Graviton, validating ARM64 multi-architecture images, and tuning Karpenter NodePools; reduced infrastructure spend by approximately \$10K/month ($\sim$\$120K annualized).
+\end{itemize}
+
+\vspace{0.22em}
+\role{DevOps Engineer}{Aug 2023 -- Sep 2024}
+\textit{Amagi Media Labs\pipe Bengaluru, India}
+
+\begin{itemize}
+    \item Developed Python tooling integrated with Slack for Kubernetes environment operations, including endpoint discovery and guarded on-demand deployments with validation and an audit trail.
+    \item Automated cloud infrastructure using reusable Pulumi YAML stacks and added Slack visibility for AWS Secrets Manager changes.
+\end{itemize}
+
+\vspace{0.22em}
+\role{Big Data Engineer}{Jul 2019 -- Apr 2020}
+\textit{Exadatum Software Services Pvt Ltd\pipe Pune, India}
+
+\begin{itemize}
+    \item Set up Docker-based Spark/Livy with Jupyter and wrote Java/JUnit tests for Kafka/GCS data flows.
 \end{itemize}
 
 \end{rSection}
 
 \begin{rSection}{Education}
 
-{\bf Master of Technology -- Computer Science and Automation}, IISc Bangalore \hfill { July 2023}
-\begin{itemize}
-    \item Relevant coursework: Network and Distributed Systems Security, Principles of Distributed Software, Scalable Systems for Data Science.
-    \item Coursework and readings on distributed systems, fault tolerance, storage, and messaging at scale.
-    \item Teaching Assistant, \textit{Computational Geometry}: graded work and supported 100+ students (UG, M.Tech, Ph.D.) with timely feedback on assignments.
-\end{itemize}
+\textbf{M.Tech, Computer Science}\pipe Indian Institute of Science (IISc), Bengaluru\pipe 2021--2023\\
+Relevant coursework: Distributed Systems, Network \& Distributed Systems Security, Principles of Distributed Software, Scalable Systems for Data Science.
 
-{\bf Bachelor of Engineering - Computer Science}, MGM's COE Nanded \hfill {July 2019}
-%Minor in Linguistics \smallskip \\
-%Member of Eta Kappa Nu \\
-%Member of Upsilon Pi Epsilon \\
+\vspace{0.2em}
+\textbf{B.E., Computer Science}\pipe MGM's College of Engineering, Nanded\pipe 2015--2019
+
+\end{rSection}
+
+\begin{rSection}{Certifications}
+
 \begin{itemize}
-    \item Relevant coursework: Data Structures and Algorithms, Operating Systems, Computer Networks, Database Management Systems.
-    \item C and Python used across coursework, labs, and small projects.
+    \item \textbf{Certified Kubernetes Administrator (CKA)}\pipe \href{https://www.credly.com/badges/5e298069-3cc7-4a4b-b30c-79a8ae8f624f/public_url}{Credential verification}
+    \item Google IT Automation with Python\pipe \href{https://www.credly.com/badges/75d9811c-198b-4dc5-a41d-dd3a6e6d9ee3/public_url}{Credential verification}
 \end{itemize}
 
 \end{rSection}
